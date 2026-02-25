@@ -1377,33 +1377,31 @@
       .card-arrow { width: 36px; height: 36px; font-size: 14px; }
 
       /* ── Services ── */
-      #services { height: auto; }
-      .srv-sticky { position: relative; height: auto; overflow: visible; }
-      .srv-stack  { position: relative; inset: auto; }
+      #services { height: auto !important; }
+      .srv-sticky { position: relative !important; height: auto !important; overflow: visible !important; }
+      .srv-stack  { position: relative !important; inset: auto !important; transform: none !important; transition: none !important; }
       .srv-panel  {
-        position: relative;
-        top: auto;
-        height: auto;
-        min-height: 100vh;
-        grid-template-columns: 1fr;
+        position: relative !important;
+        top: auto !important;
+        height: auto !important;
+        min-height: auto;
+        grid-template-columns: 1fr !important;
         grid-template-rows: auto auto;
-        padding: 80px 0 60px;
+        padding: 60px 0 40px;
       }
-      .srv-left  { padding: 0 var(--px) 40px; }
-      .srv-title { font-size: clamp(52px, 14vw, 80px); line-height: 1; }
-      .srv-desc  { font-size: 14px; margin-top: 16px; }
-      .srv-tags  { margin-top: 20px; gap: 8px; }
-      .srv-right {
-        height: 50vw;
-        min-height: 220px;
-        max-height: 340px;
-        order: -1; /* imagen arriba */
-      }
+      .srv-left  { padding: 0 var(--px) 32px; order: 2; }
+      .srv-right { order: 1; height: 60vw; min-height: 200px; max-height: 280px; }
+      .srv-title { font-size: clamp(36px, 11vw, 56px); line-height: 1; }
+      .srv-desc  { font-size: 13px; margin-top: 12px; }
+      .srv-tags  { margin-top: 16px; gap: 6px; }
+      .srv-tag   { font-size: 10px; padding: 4px 10px; }
       .srv-glyph-img {
-        max-height: 200px;
-        max-width: 80%;
+        width: auto;
+        height: 100%;
+        max-height: 100%;
+        max-width: 70%;
       }
-      .srv-p4 .srv-glyph-img { max-height: 240px; max-width: 90%; }
+      .srv-p4 .srv-glyph-img { max-width: 80%; }
       .srv-vignette { display: none; }
       .srv-dots { display: none; }
 
