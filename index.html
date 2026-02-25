@@ -1434,27 +1434,29 @@
 
       /* ── Services — mismo comportamiento sticky que desktop ── */
       .srv-panel {
-        grid-template-columns: 1fr;
-        grid-template-rows: 55vh 1fr;
-        align-items: start;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 55vh 1fr !important;
+        align-items: start !important;
       }
       .srv-right {
-        order: 1;
-        height: 55vh;
+        order: 1 !important;
+        height: 55vh !important;
+        width: 100% !important;
       }
       .srv-left  {
-        order: 2;
-        padding: 20px var(--px) 40px;
+        order: 2 !important;
+        padding: 20px var(--px) 40px !important;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 100% !important;
       }
-      .srv-title { font-size: clamp(36px, 10vw, 52px); line-height: 1; }
+      .srv-title { font-size: clamp(36px, 10vw, 52px) !important; line-height: 1; }
       .srv-desc  { font-size: 13px; margin-top: 12px; letter-spacing: 0.06em; }
       .srv-tags  { margin-top: 14px; gap: 6px; }
       .srv-tag   { font-size: 10px; padding: 4px 10px; }
-      .srv-glyph-img { max-height: 88%; max-width: 80%; }
-      .srv-p4 .srv-glyph-img { max-width: 85%; }
+      .srv-glyph-img { max-height: 88% !important; max-width: 80% !important; }
+      .srv-p4 .srv-glyph-img { max-width: 85% !important; }
       .srv-vignette { display: none; }
       .srv-dots { bottom: 16px; right: 16px; }
 
