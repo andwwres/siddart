@@ -38,7 +38,7 @@
       /* ── Paleta de marca Siddart ── */
       --accent:    #EC6442;   /* Pantone 7416c — coral/naranja primario */
       --purple:    #2D1A35;   /* Pantone 7665c — púrpura oscuro */
-      --black:     #000000;   /* Negro puro */
+      --black:     #1B1B20;   /* Pantone Black 6c — negro carbón */
       --carbon:    #1B1B20;   /* Pantone Black 6c — negro carbón */
       --gray:      #EDEDED;   /* Cool Gray — gris frío */
       --white:     #ffffff;
@@ -435,7 +435,7 @@
 
     /* ── Hero background — flame streaks / light rays ── */
     #hero {
-      background: #0d0402;
+      background: #1B1B20;
     }
 
     .hero-bg {
@@ -594,6 +594,16 @@
       flex-shrink: 0;
       transition: background 0.25s;
     }
+    .btn-primary .btn-arrow::after {
+      content: '→';
+      display: block;
+      transform: rotate(-45deg);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+      line-height: 1;
+    }
+    .btn-primary:hover .btn-arrow::after {
+      transform: rotate(0deg);
+    }
     .btn-primary span:first-child { order: 1; }
     .btn-primary:hover {
       background: #000;
@@ -705,7 +715,7 @@
       height: 1px;
       margin: 8px 24px 0;
       background: currentColor;
-      opacity: 0.25;            /* exact from original */
+      opacity: 0.25;
       flex-shrink: 0;
     }
 
@@ -713,7 +723,7 @@
     .card-title-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 16px;
       padding: 8px 24px 0;
       flex-shrink: 0;
@@ -735,12 +745,13 @@
       flex-shrink: 0;
       transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
                   opacity  0.4s cubic-bezier(0.16,1,0.3,1);
-      margin-top: 2px;
+      margin-top: 0;
       display: inline-block;
+      transform: rotate(-45deg);
     }
 
     .project-card:hover .card-arrow {
-      transform: translate(8px, -8px);
+      transform: rotate(0deg);
       opacity: 1;
     }
 
@@ -960,9 +971,9 @@
     }
 
     .about-isotipo {
-      width: 52px;
-      height: 52px;
-      fill: rgba(255,255,255,0.9);
+      width: 160px;
+      height: 160px;
+      fill: #EC6442;
       margin: 32px 0 24px;
       display: block;
       flex-shrink: 0;
@@ -1509,21 +1520,21 @@
     }
 
     /* Panel-specific colors */
-    .srv-p1 { background: #090402; }
+    .srv-p1 { background: #1B1B20; }
     .srv-p1 .srv-glyph { color: rgba(236,100,66,0.9); }
     .srv-p1 .srv-title em { color: #EC6442; }
 
-    .srv-p2 { background: #04050e; }
+    .srv-p2 { background: #1B1B20; }
     .srv-p2 .srv-glyph { color: rgba(237,237,237,0.9); }
     .srv-p2 .srv-title em { color: #999999; }
     .srv-p2 .srv-eyebrow-dot { background: #999999; }
 
-    .srv-p3 { background: #030a05; }
+    .srv-p3 { background: #1B1B20; }
     .srv-p3 .srv-glyph { color: rgba(40,200,100,0.9); }
     .srv-p3 .srv-title em { color: #28c864; }
     .srv-p3 .srv-eyebrow-dot { background: #28c864; }
 
-    .srv-p4 { background: #080408; }
+    .srv-p4 { background: #1B1B20; }
     .srv-p4 .srv-glyph { color: rgba(107,63,160,0.9); }
     .srv-p4 .srv-title em { color: #6B3FA0; }
     .srv-p4 .srv-eyebrow-dot { background: #6B3FA0; }
@@ -1658,59 +1669,21 @@
     <div class="grid-line"></div>
   </div>
 
-  <!-- Hero background — flame streaks + radial orbs -->
-  <svg class="hero-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <!-- Hero background — plasma WebGL canvas -->
+  <canvas id="plasmaCanvas" class="hero-bg" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+  <!-- Hero SVG overlay — grid + vignette + vertical text -->
+  <svg class="hero-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="z-index:1;">
     <defs>
-      <radialGradient id="heroOrb" cx="68%" cy="52%" r="55%">
-        <stop offset="0%"   stop-color="rgba(220,65,15,1)"/>
-        <stop offset="30%"  stop-color="rgba(190,45,10,0.85)"/>
-        <stop offset="60%"  stop-color="rgba(120,20,5,0.5)"/>
-        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-      </radialGradient>
-      <radialGradient id="heroHighlight" cx="72%" cy="45%" r="28%">
-        <stop offset="0%"   stop-color="rgba(255,140,60,0.9)"/>
-        <stop offset="50%"  stop-color="rgba(240,90,30,0.4)"/>
-        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-      </radialGradient>
       <linearGradient id="heroLeft" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%"  stop-color="rgba(8,2,1,0.92)"/>
-        <stop offset="45%" stop-color="rgba(0,0,0,0)"/>
+        <stop offset="0%"  stop-color="rgba(27,27,32,0.97)"/>
+        <stop offset="45%" stop-color="rgba(27,27,32,0)"/>
       </linearGradient>
       <linearGradient id="heroTop" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%"  stop-color="rgba(5,1,0,0.85)"/>
-        <stop offset="40%" stop-color="rgba(0,0,0,0)"/>
+        <stop offset="0%"  stop-color="rgba(27,27,32,0.85)"/>
+        <stop offset="40%" stop-color="rgba(27,27,32,0)"/>
       </linearGradient>
-      <filter id="raysBlur">
-        <feGaussianBlur stdDeviation="5"/>
-      </filter>
     </defs>
-    <!-- Base dark -->
-    <rect width="1440" height="900" fill="#0d0402"/>
-    <!-- Main orb -->
-    <rect width="1440" height="900" fill="url(#heroOrb)"/>
-    <!-- Highlight -->
-    <rect width="1440" height="900" fill="url(#heroHighlight)"/>
-    <!-- Light rays / flame streaks -->
-    <g filter="url(#raysBlur)" opacity="0.55" style="mix-blend-mode:screen">
-      <path d="M 820 900 C 810 600, 830 300, 815 0"   stroke="rgba(255,170,80,0.55)"  stroke-width="18" fill="none"/>
-      <path d="M 870 900 C 865 580, 880 280, 862 0"   stroke="rgba(255,150,60,0.45)"  stroke-width="12" fill="none"/>
-      <path d="M 940 900 C 932 600, 955 320, 938 0"   stroke="rgba(255,180,90,0.5)"   stroke-width="22" fill="none"/>
-      <path d="M 990 900 C 985 570, 1005 270, 988 0"  stroke="rgba(255,130,50,0.38)"  stroke-width="9"  fill="none"/>
-      <path d="M 1060 900 C 1050 610, 1070 310, 1052 0" stroke="rgba(255,190,100,0.52)" stroke-width="28" fill="none"/>
-      <path d="M 1120 900 C 1115 590, 1138 290, 1118 0" stroke="rgba(255,145,65,0.4)"  stroke-width="10" fill="none"/>
-      <path d="M 1180 900 C 1172 620, 1195 330, 1176 0" stroke="rgba(255,175,85,0.48)" stroke-width="20" fill="none"/>
-      <path d="M 1240 900 C 1235 600, 1255 300, 1238 0" stroke="rgba(255,120,45,0.35)" stroke-width="8"  fill="none"/>
-      <path d="M 1300 900 C 1292 580, 1315 270, 1296 0" stroke="rgba(255,165,75,0.42)" stroke-width="15" fill="none"/>
-      <path d="M 1360 900 C 1355 600, 1375 305, 1358 0" stroke="rgba(255,190,95,0.3)"  stroke-width="6"  fill="none"/>
-      <path d="M 760 900 C 752 610, 775 320, 758 0"    stroke="rgba(255,155,70,0.38)"  stroke-width="11" fill="none"/>
-      <path d="M 700 900 C 695 580, 718 285, 700 0"    stroke="rgba(255,140,60,0.28)"  stroke-width="7"  fill="none"/>
-      <path d="M 1400 900 C 1395 590, 1415 290, 1398 0" stroke="rgba(255,200,110,0.25)" stroke-width="5" fill="none"/>
-      <path d="M 640 900 C 636 600, 658 310, 641 0"    stroke="rgba(255,130,55,0.22)"  stroke-width="5"  fill="none"/>
-    </g>
-    <!-- Vignette left -->
-    <rect width="1440" height="900" fill="url(#heroLeft)"/>
-    <!-- Vignette top -->
-    <rect width="1440" height="900" fill="url(#heroTop)"/>
     <!-- Máscara de fade para la grilla: difumina izquierda, derecha y arriba -->
     <defs>
       <linearGradient id="gridFadeX" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1792,7 +1765,7 @@
     <div class="hero-divider"></div>
     <p class="hero-sub">Brand identities and digital experiences that turn attention into revenue — for companies ready to scale.</p>
     <div class="hero-ctas">
-      <a href="#contact" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow">→</span></a>
+      <a href="#contact" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow"></span></a>
       <a href="#projects" class="btn-ghost">See our work ↓</a>
     </div>
   </div>
@@ -1886,41 +1859,6 @@
 
   </div>
 </section>
-
-<!-- ══ CLIENTS MARQUEE ══ -->
-<div class="clients-marquee-wrap">
-  <div class="clients-marquee-label">trusted by</div>
-  <div class="clients-marquee-track-wrap">
-    <div class="clients-marquee-track">
-      <!-- Set 1 -->
-      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
-      <span class="client-sep">—</span>
-      <!-- Set 2 — copia idéntica pegada al final, animación hasta -50% = loop perfecto -->
-      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
-      <span class="client-sep">—</span>
-      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
-      <span class="client-sep">—</span>
-    </div>
-  </div>
-</div>
 
 <!-- ══ SERVICES ══ -->
 <section id="services">
@@ -2059,6 +1997,41 @@
 
 </section><!-- /services -->
 
+<!-- ══ CLIENTS MARQUEE ══ -->
+<div class="clients-marquee-wrap">
+  <div class="clients-marquee-label">trusted by</div>
+  <div class="clients-marquee-track-wrap">
+    <div class="clients-marquee-track">
+      <!-- Set 1 -->
+      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
+      <span class="client-sep">—</span>
+      <!-- Set 2 — copia idéntica pegada al final, animación hasta -50% = loop perfecto -->
+      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
+      <span class="client-sep">—</span>
+    </div>
+  </div>
+</div>
+
 <!-- ══ ABOUT ══ -->
 <section id="about">
   <div class="about-text-col">
@@ -2072,7 +2045,7 @@
       <p class="about-text reveal">
         We don't just make things <span class="bright">look good.</span> We build <span class="bright">brands</span> that command <span class="bright">authority,</span> <span class="bright">websites</span> that convert, and campaigns <span class="bright">that scale</span> — for companies that mean <span class="bright">business.</span>
       </p>
-      <a href="#contact" class="btn-outline reveal">about us ↗</a>
+      <a href="#contact" class="btn-primary reveal" style="width:fit-content;align-self:flex-start;"><span>about us</span><span class="btn-arrow"></span></a>
     </div>
     <div class="about-stats reveal">
       <div class="about-stat">
@@ -2119,7 +2092,7 @@
     <h2 class="footer-heading">Ready to build something great?</h2>
     <p class="footer-sub">We open <em>a limited number of new client spots</em> each month. If you're serious about growth, let's talk.</p>
     <div class="footer-cta">
-      <a href="mailto:hello@siddart.co" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow">→</span></a>
+      <a href="mailto:hello@siddart.co" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow"></span></a>
       <a href="mailto:hello@siddart.co" class="footer-email">hello@siddart.co</a>
     </div>
   </div>
@@ -2185,6 +2158,125 @@ const revealObs = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 
 nonHeroReveals.forEach(el => revealObs.observe(el));
+
+// ── Plasma WebGL hero background ─────────────────────────────
+(function initPlasma() {
+  const canvas = document.getElementById('plasmaCanvas');
+  if (!canvas) return;
+  const gl = canvas.getContext('webgl2', { alpha: true, antialias: false });
+  if (!gl) return;
+
+  const vert = `#version 300 es
+precision highp float;
+in vec2 position;
+out vec2 vUv;
+void main() {
+  vUv = position * 0.5 + 0.5;
+  gl_Position = vec4(position, 0.0, 1.0);
+}`;
+
+  const frag = `#version 300 es
+precision highp float;
+uniform vec2 iResolution;
+uniform float iTime;
+uniform vec3 uColor;
+uniform float uSpeed;
+uniform float uOpacity;
+uniform vec2 uMouse;
+out vec4 fragColor;
+void mainImage(out vec4 o, vec2 C) {
+  vec2 center = iResolution.xy * 0.5;
+  vec2 mouseOffset = (uMouse - center) * 0.0002;
+  C += mouseOffset * length(C - center);
+  float i, d, z, T = iTime * uSpeed;
+  vec3 O, p, S;
+  for (vec2 r = iResolution.xy, Q; ++i < 60.; O += o.w/d*o.xyz) {
+    p = z*normalize(vec3(C-.5*r,r.y));
+    p.z -= 4.;
+    S = p;
+    d = p.y-T;
+    p.x += .4*(1.+p.y)*sin(d + p.x*0.1)*cos(.34*d + p.x*0.05);
+    Q = p.xz *= mat2(cos(p.y+vec4(0,11,33,0)-T));
+    z+= d = abs(sqrt(length(Q*Q)) - .25*(5.+S.y))/3.+8e-4;
+    o = 1.+sin(S.y+p.z*.5+S.z-length(S-p)+vec4(2,1,0,8));
+  }
+  o.xyz = tanh(O/1e4);
+}
+bool finite1(float x){ return !(isnan(x) || isinf(x)); }
+vec3 sanitize(vec3 c){
+  return vec3(finite1(c.r)?c.r:0.0, finite1(c.g)?c.g:0.0, finite1(c.b)?c.b:0.0);
+}
+void main() {
+  vec4 o = vec4(0.0);
+  mainImage(o, gl_FragCoord.xy);
+  vec3 rgb = sanitize(o.rgb);
+  float intensity = (rgb.r + rgb.g + rgb.b) / 3.0;
+  vec3 finalColor = intensity * uColor;
+  float alpha = length(rgb) * uOpacity;
+  fragColor = vec4(finalColor, alpha);
+}`;
+
+  function createShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, createShader(gl.VERTEX_SHADER, vert));
+  gl.attachShader(prog, createShader(gl.FRAGMENT_SHADER, frag));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  // Full-screen triangle
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const posLoc = gl.getAttribLocation(prog, 'position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime = gl.getUniformLocation(prog, 'iTime');
+  const uRes  = gl.getUniformLocation(prog, 'iResolution');
+  const uCol  = gl.getUniformLocation(prog, 'uColor');
+  const uSpd  = gl.getUniformLocation(prog, 'uSpeed');
+  const uOpa  = gl.getUniformLocation(prog, 'uOpacity');
+  const uMse  = gl.getUniformLocation(prog, 'uMouse');
+
+  // Brand orange #EC6442
+  gl.uniform3f(uCol, 0.925, 0.392, 0.259);
+  gl.uniform1f(uSpd, 0.4);
+  gl.uniform1f(uOpa, 0.85);
+
+  let mouseX = 0, mouseY = 0;
+  const hero = document.getElementById('hero');
+  hero.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouseX = e.clientX - r.left;
+    mouseY = canvas.height - (e.clientY - r.top);
+  }, { passive: true });
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width  = Math.floor(canvas.offsetWidth  * dpr);
+    canvas.height = Math.floor(canvas.offsetHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  const t0 = performance.now();
+  (function loop(t) {
+    gl.uniform1f(uTime, (t - t0) * 0.001);
+    gl.uniform2f(uMse, mouseX, mouseY);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(loop);
+  })(t0);
+})();
 
 // ── Full-screen overlay menu ──────────────────────────────────
 const menuToggle  = document.getElementById('menuToggle');
