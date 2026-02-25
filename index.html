@@ -1356,32 +1356,55 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: 0;
       }
       .hero-text-block {
-        padding-top: 80px;
+        padding-top: 100px;
         padding-bottom: 60px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        flex: 1;
+        justify-content: center;
+        gap: 0;
       }
-      .hero-tag { font-size: 10px; margin-bottom: 32px; }
+      .hero-tag {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        margin-bottom: 36px;
+      }
       .hero-heading {
-        font-size: clamp(42px, 12vw, 64px);
+        font-size: clamp(46px, 13vw, 68px);
         line-height: 1.0;
       }
       .hero-cycle-wrapper {
-        height: clamp(46px, 13vw, 70px);
+        height: clamp(50px, 14vw, 74px);
       }
       .hero-cycle span {
-        font-size: clamp(44px, 13vw, 70px);
-        height: clamp(46px, 13vw, 70px);
-        line-height: clamp(46px, 13vw, 70px);
+        font-size: clamp(48px, 14vw, 72px);
+        height: clamp(50px, 14vw, 74px);
+        line-height: clamp(50px, 14vw, 74px);
       }
-      .hero-divider { margin: 24px 0; }
-      .hero-subtitle { font-size: 14px; max-width: 100%; line-height: 1.5; }
-      .hero-cta { margin-top: 32px; flex-wrap: wrap; gap: 14px; align-items: center; }
+      .hero-divider { margin: 28px 0; }
+      .hero-subtitle {
+        font-size: 13px;
+        max-width: 100%;
+        line-height: 1.7;
+        letter-spacing: 0.04em;
+        color: rgba(255,255,255,0.55);
+      }
+      .hero-cta {
+        margin-top: 36px;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+      .btn-primary {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        padding: 12px 20px;
+      }
+      .hero-scroll-hint {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+      }
       #heroVertText { display: none; }
       .crosshair { display: none; }
       .crosshair-abs { display: none; }
