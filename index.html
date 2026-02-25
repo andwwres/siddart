@@ -1337,30 +1337,86 @@
        RESPONSIVE — mobile
     ════════════════════════════════════════ */
     @media (max-width: 768px) {
-      :root { --px: 20px; }
+      :root { --px: 24px; }
       body { cursor: auto; }
       .cursor-dot, .cursor-ring { display: none; }
 
       nav { padding: 16px var(--px); }
 
-      /* Overlay menu: single column on mobile */
+      /* Overlay menu */
       .menu-overlay { grid-template-columns: 1fr; }
       .menu-right    { display: none; }
       .menu-left     { padding: 100px var(--px) 60px; }
       .menu-nav a    { font-size: clamp(28px, 9vw, 48px); padding: 14px 0; }
 
-      #hero { padding: 120px var(--px) 60px; }
+      /* ── Hero ── */
+      #hero { padding: 100px var(--px) 60px; }
+      .hero-eyebrow { font-size: 10px; margin-bottom: 20px; }
+      .hero-title {
+        font-size: clamp(44px, 12vw, 72px);
+        line-height: 1.05;
+      }
+      .hero-subtitle { font-size: 14px; margin-top: 20px; max-width: 100%; }
+      .hero-cta { margin-top: 36px; flex-wrap: wrap; gap: 16px; }
+      #heroVertText { display: none; }
+      .crosshair { display: none; }
+      .crosshair-abs { display: none; }
+      /* Ocultar grid SVG en mobile */
+      svg.hero-bg { display: none; }
 
+      /* ── Projects ── */
       .project-card {
         top: 56px;
         height: calc(100vh - 68px);
-        margin: 0 10px;
-        padding: 16px;
+        margin: 0 8px;
+        padding: 20px var(--px);
       }
+      .card-title-row { gap: 12px; }
+      .card-title { font-size: clamp(28px, 8vw, 44px); }
+      .card-meta { font-size: 10px; }
+      .card-arrow { width: 36px; height: 36px; font-size: 14px; }
 
+      /* ── Services ── */
+      #services { height: auto; }
+      .srv-sticky { position: relative; height: auto; overflow: visible; }
+      .srv-stack  { position: relative; inset: auto; }
+      .srv-panel  {
+        position: relative;
+        top: auto;
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        padding: 80px 0 60px;
+      }
+      .srv-left  { padding: 0 var(--px) 40px; }
+      .srv-title { font-size: clamp(52px, 14vw, 80px); line-height: 1; }
+      .srv-desc  { font-size: 14px; margin-top: 16px; }
+      .srv-tags  { margin-top: 20px; gap: 8px; }
+      .srv-right {
+        height: 50vw;
+        min-height: 220px;
+        max-height: 340px;
+        order: -1; /* imagen arriba */
+      }
+      .srv-glyph-img {
+        max-height: 200px;
+        max-width: 80%;
+      }
+      .srv-p4 .srv-glyph-img { max-height: 240px; max-width: 90%; }
+      .srv-vignette { display: none; }
+      .srv-dots { display: none; }
+
+      /* ── Marquee ── */
+      .marquee-track { gap: 40px; }
+      .marquee-logo  { height: 22px; }
+
+      /* ── About ── */
       #about { grid-template-columns: 1fr; }
       .about-image-col { height: 70vw; }
-      .about-text-col { padding: 60px var(--px); justify-content: flex-start; gap: 48px; }
+      .about-text-col { padding: 60px var(--px); justify-content: flex-start; gap: 40px; }
+      .about-isotipo { width: 100px; height: 100px; }
+      .about-heading { font-size: clamp(32px, 9vw, 52px); }
       .about-stats { grid-template-columns: 1fr 1fr; margin-top: 0; }
       .about-stat { padding: 24px 0; }
       .about-stat:nth-child(odd) { padding-right: 20px; }
@@ -1368,8 +1424,11 @@
       .stat-number { font-size: clamp(36px, 9vw, 56px); }
       .stat-label { font-size: 13px; }
 
-.crosshair-abs { display: none; }
+      /* ── Contact ── */
+      #contact { padding: 80px var(--px); }
+      .contact-heading { font-size: clamp(36px, 10vw, 60px); }
 
+      /* ── Footer ── */
       footer { min-height: auto; padding: 80px var(--px) 40px; }
       .footer-bottom { margin-top: 48px; flex-direction: column; align-items: flex-start; gap: 16px; }
     }
@@ -2347,6 +2406,8 @@ window.addEventListener('scroll', () => {
   var srvStack   = document.getElementById('srvStack');
   var dots       = document.querySelectorAll('.srv-dot');
   if (!srvSection || !srvStack) return;
+  // Disable on mobile — panels stack vertically via CSS
+  if (window.innerWidth <= 768) return;
 
   var TOTAL = 4;
   var cur   = -1; // force first update
