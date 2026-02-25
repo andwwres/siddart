@@ -1368,16 +1368,16 @@
       }
       .hero-tag { font-size: 10px; margin-bottom: 32px; }
       .hero-heading {
-        font-size: clamp(40px, 12vw, 62px);
+        font-size: clamp(42px, 12vw, 64px);
         line-height: 1.0;
       }
       .hero-cycle-wrapper {
-        height: clamp(52px, 14vw, 76px);
+        height: clamp(46px, 13vw, 70px);
       }
       .hero-cycle span {
-        font-size: clamp(48px, 14vw, 76px);
-        height: clamp(52px, 14vw, 76px);
-        line-height: clamp(52px, 14vw, 76px);
+        font-size: clamp(44px, 13vw, 70px);
+        height: clamp(46px, 13vw, 70px);
+        line-height: clamp(46px, 13vw, 70px);
       }
       .hero-divider { margin: 24px 0; }
       .hero-subtitle { font-size: 14px; max-width: 100%; line-height: 1.5; }
@@ -2432,15 +2432,15 @@ window.addEventListener('scroll', () => {
   var cur   = -1;
 
   function update() {
-    // On mobile: reset any transform and bail out
     if (mq.matches) {
-      srvStack.style.transform = '';
+      srvStack.style.transform = 'none';
+      cur = -1;
       return;
     }
-    var scrolled  = window.scrollY - srvSection.offsetTop;
-    var panelH    = window.innerHeight;
-    var clamped   = Math.max(0, Math.min(scrolled, panelH * TOTAL - 1));
-    var idx       = Math.min(TOTAL - 1, Math.floor(clamped / panelH));
+    var scrolled = window.scrollY - srvSection.offsetTop;
+    var panelH   = window.innerHeight;
+    var clamped  = Math.max(0, Math.min(scrolled, panelH * (TOTAL - 1)));
+    var idx      = Math.min(TOTAL - 1, Math.floor(clamped / panelH));
 
     if (idx === cur) return;
     cur = idx;
@@ -2449,6 +2449,7 @@ window.addEventListener('scroll', () => {
   }
 
   window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', function() { cur = -1; update(); });
   update();
 
   // Dot clicks — scroll to that panel's position
