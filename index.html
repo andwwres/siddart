@@ -1479,11 +1479,12 @@
     }
     .srv-glyph-img {
       width: auto;
-      height: 75%;
+      height: 100%;
       max-height: 520px;
       max-width: 600px;
       object-fit: contain;
-      margin-top: 5%;
+      position: relative;
+      z-index: 1;
     }
     .srv-vignette {
       position: absolute;
@@ -1531,20 +1532,41 @@
     .srv-p3 .srv-eyebrow-dot { background: #28c864; }
 
     .srv-p4 { background: #080408; }
-    .srv-p4 .srv-glyph { color: rgba(180,60,240,0.9); }
-    .srv-p4 .srv-title em { color: #b43cf0; }
-    .srv-p4 .srv-eyebrow-dot { background: #b43cf0; }
+    .srv-p4 .srv-glyph { color: rgba(107,63,160,0.9); }
+    .srv-p4 .srv-title em { color: #6B3FA0; }
+    .srv-p4 .srv-eyebrow-dot { background: #6B3FA0; }
 
     @keyframes corchetes-float {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-30px); }
     }
-    @keyframes corchetes-glow {
-      0%, 100% { filter: drop-shadow(0 0 30px rgba(237,237,237,0.35)) drop-shadow(0 0 60px rgba(237,237,237,0.15)); }
-      50% { filter: drop-shadow(0 0 90px rgba(237,237,237,1.0)) drop-shadow(0 0 180px rgba(237,237,237,0.70)); }
+    @keyframes corchetes-glow-pulse {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
     }
     .srv-glyph-img {
-      animation: corchetes-float 4s ease-in-out infinite, corchetes-glow 4s ease-in-out infinite;
+      will-change: transform;
+      animation: corchetes-float 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 50px rgba(237,237,237,0.55)) drop-shadow(0 0 100px rgba(237,237,237,0.30));
+    }
+    .srv-glyph-img-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 75%;
+      max-height: 520px;
+    }
+    .srv-glyph-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(237,237,237,0.45) 0%, rgba(237,237,237,0.15) 40%, transparent 70%);
+      will-change: opacity;
+      animation: corchetes-glow-pulse 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
     }
   </style>
 </head>
@@ -1903,7 +1925,9 @@
       </div>
       <div class="srv-right">
         <div class="srv-orb" style="background:radial-gradient(circle,rgba(236,100,66,0.8) 0%,rgba(180,40,10,0.4) 50%,transparent 100%);"></div>
-        <div class="srv-glyph">◈</div>
+        <div class="srv-glyph-img-wrap">
+          <img class="srv-glyph srv-glyph-img" src="ASTERICO.png" alt="" aria-hidden="true">
+        </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
             <linearGradient id="svvig1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1931,7 +1955,9 @@
       </div>
       <div class="srv-right">
         <div class="srv-orb" style="background:radial-gradient(circle,rgba(237,237,237,0.55) 0%,rgba(200,200,200,0.22) 50%,transparent 100%);"></div>
-        <img class="srv-glyph srv-glyph-img" src="CORCHETES.png" alt="" aria-hidden="true">
+        <div class="srv-glyph-img-wrap">
+          <img class="srv-glyph srv-glyph-img" src="CORCHETES.png" alt="" aria-hidden="true">
+        </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
             <linearGradient id="svvig2" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1986,8 +2012,10 @@
         </div>
       </div>
       <div class="srv-right">
-        <div class="srv-orb" style="background:radial-gradient(circle,rgba(180,60,240,0.8) 0%,rgba(120,20,180,0.4) 50%,transparent 100%);"></div>
-        <div class="srv-glyph">❋</div>
+        <div class="srv-orb" style="background:radial-gradient(circle,rgba(107,63,160,0.9) 0%,rgba(107,63,160,0.5) 50%,transparent 100%);"></div>
+        <div class="srv-glyph-img-wrap">
+          <img class="srv-glyph srv-glyph-img" src="ESPIRAL.png" alt="" aria-hidden="true">
+        </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
             <linearGradient id="svvig4" x1="0%" y1="0%" x2="100%" y2="0%">
