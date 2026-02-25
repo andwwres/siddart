@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nitro — a Portfolio</title>
+  <!--
+    Tipografía: Swiss 721 Light Extended (local .otf) — única fuente del sistema
+    Colores: Manual de marca Siddart (Pantone 7665c, 7416c, Black 6c, Cool Gray)
+  -->
+  <style>
+    /* Swiss 721 — familia completa */
+    @font-face {
+      font-family: 'Swiss721';
+      src: url('Fonts/Swiss721BT-LightExtended.otf') format('opentype');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Swiss721';
+      src: url('Fonts/Swiss721BT-Roman.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Swiss721';
+      src: url('Fonts/Swiss721BT-BoldExtended.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Paleta de marca Siddart ── */
+      --accent:    #EC6442;   /* Pantone 7416c — coral/naranja primario */
+      --purple:    #2D1A35;   /* Pantone 7665c — púrpura oscuro */
+      --black:     #000000;   /* Negro puro */
+      --carbon:    #1B1B20;   /* Pantone Black 6c — negro carbón */
+      --gray:      #EDEDED;   /* Cool Gray — gris frío */
+      --white:     #ffffff;
+
+      /* aliases para compatibilidad con el código existente */
+      --orange:    var(--accent);
+      --dark-card: var(--carbon);
+      --gray-card: #2a2a2a;
+      --teal:      var(--accent);
+      --mint:      var(--accent);
+      --yellow:    #EDEDED;
+
+      --px: clamp(24px, 6vw, 120px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    section[id] { scroll-margin-top: 64px; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Swiss721', sans-serif;
+      font-weight: 400;              /* Roman por defecto */
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ════════════════════════════════════════
+       NAVBAR
+    ════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px clamp(24px, 5vw, 80px);
+      transition: padding 0.3s;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      color: var(--white);
+      position: relative;
+      z-index: 400;
+    }
+
+    .logo-img {
+      height: 30px;
+      width: auto;
+      display: block;
+    }
+
+    /* En el overlay naranja, el logo cambia via JS (src swap) */
+
+    /* ── Hamburger button ── */
+    .nav-hamburger {
+      position: relative;
+      z-index: 400;
+      width: 44px;
+      height: 44px;
+      background: none;
+      border: none;
+      cursor: none;
+      padding: 0;
+      /* Las dos líneas se posicionan absolutamente desde el centro exacto */
+    }
+
+    .nav-hamburger span {
+      display: block;
+      position: absolute;
+      left: 50%;
+      width: 22px;
+      height: 1px;
+      background: var(--white);
+      transform-origin: center;
+      /* Centradas verticalmente: top - mitad de la separación */
+      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+                  background 0.2s;
+    }
+
+    /* Las dos líneas parten del centro exacto del botón (22px = mitad del alto) */
+    /* Separadas 5px arriba y abajo del centro */
+    .nav-hamburger span:first-child {
+      top: calc(50% - 5px);
+      transform: translateX(-50%);
+    }
+    .nav-hamburger span:last-child {
+      top: calc(50% + 4px);
+      transform: translateX(-50%);
+    }
+
+    /* Open state — X: ambas rotan desde el mismo centro */
+    .nav-hamburger.is-open span:first-child {
+      transform: translateX(-50%) translateY(4.5px) rotate(45deg);
+    }
+    .nav-hamburger.is-open span:last-child {
+      transform: translateX(-50%) translateY(-4.5px) rotate(-45deg);
+    }
+
+    /* When overlay is open — logo text and hamburger lines go black (overlay is orange) */
+    .nav-hamburger.is-open span { background: #000; }
+    .menu-open .nav-logo { color: #000; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ════════════════════════════════════════
+       FULL-SCREEN OVERLAY MENU
+    ════════════════════════════════════════ */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: var(--accent);
+      display: grid;
+      grid-template-columns: 1fr 42%;
+      align-items: stretch;
+      pointer-events: none;
+      opacity: 0;
+      /* Clip from top to reveal downward */
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 0.7s cubic-bezier(0.76, 0, 0.24, 1),
+                  opacity   0.1s linear;
+    }
+
+    .menu-overlay.is-open {
+      pointer-events: all;
+      opacity: 1;
+      clip-path: inset(0 0 0% 0);
+    }
+
+    /* ── Left side: navigation links ── */
+    .menu-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 120px clamp(24px, 5vw, 80px) 72px;
+      gap: 0;
+    }
+
+    /* Override general nav styles inside overlay */
+    .menu-overlay nav {
+      position: static;
+      background: none;
+      backdrop-filter: none;
+      border: none;
+      padding: 0;
+      display: block;
+    }
+
+    .menu-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-nav li {
+      border-top: 1px solid rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+
+    .menu-nav li:last-child { border-bottom: 1px solid rgba(0,0,0,0.15); }
+
+    .menu-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(32px, 5.5vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      color: rgba(0,0,0,0.75);
+      text-transform: lowercase;
+      transition: color 0.3s, padding-left 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    .menu-nav a .menu-num {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: rgba(0,0,0,0.3);
+      align-self: flex-start;
+      padding-top: 8px;
+      transition: color 0.3s;
+    }
+
+    .menu-nav a:hover {
+      color: #000;
+      padding-left: 12px;
+    }
+
+    .menu-nav a:hover .menu-num { color: rgba(0,0,0,0.6); }
+
+    /* Stagger animation for links when opening */
+    .menu-nav li {
+      transform: translateY(40px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity   0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu-overlay.is-open .menu-nav li:nth-child(1) { transform: translateY(0); opacity: 1; transition-delay: 0.15s; }
+    .menu-overlay.is-open .menu-nav li:nth-child(2) { transform: translateY(0); opacity: 1; transition-delay: 0.22s; }
+    .menu-overlay.is-open .menu-nav li:nth-child(3) { transform: translateY(0); opacity: 1; transition-delay: 0.29s; }
+    .menu-overlay.is-open .menu-nav li:nth-child(4) { transform: translateY(0); opacity: 1; transition-delay: 0.36s; }
+
+    /* Footer row inside overlay */
+    .menu-footer {
+      margin-top: 48px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+
+    .menu-overlay.is-open .menu-footer {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.5s;
+    }
+
+    .menu-footer a {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.4);
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .menu-footer a:hover { color: #000; }
+
+    /* ── Right side: hover image ── */
+    .menu-right {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-image-panel {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .menu-image-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.06);
+      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.6s cubic-bezier(0.16,1,0.3,1);
+      position: absolute;
+      inset: 0;
+    }
+
+    .menu-image-panel img.is-visible {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+
+    /* Subtle gradient over image */
+    .menu-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ════════════════════════════════════════
+       VERTICAL GRID LINES
+       Original: 10 lines, transparent→rgba(255,255,255,0.25)
+       Positioned evenly within content area (inside padding)
+    ════════════════════════════════════════ */
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;                     /* siempre detrás del contenido */
+      overflow: hidden;
+    }
+
+    .grid-line {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom,
+        rgba(255,255,255,0)    0%,
+        rgba(255,255,255,0.14) 10%,
+        rgba(255,255,255,0.14) 22%,
+        rgba(255,255,255,0)    38%,
+        rgba(255,255,255,0)    100%);
+    }
+
+    /* 9 lines at exact original positions (measured from framer source) */
+    .grid-line:nth-child(1) { left: 12.21%; }
+    .grid-line:nth-child(2) { left: 21.58%; }
+    .grid-line:nth-child(3) { left: 30.95%; }
+    .grid-line:nth-child(4) { left: 40.32%; }
+    .grid-line:nth-child(5) { left: 49.69%; }
+    .grid-line:nth-child(6) { left: 59.06%; }
+    .grid-line:nth-child(7) { left: 68.43%; }
+    .grid-line:nth-child(8) { left: 77.80%; }
+    .grid-line:nth-child(9) { left: 87.17%; }
+
+    /* ════════════════════════════════════════
+       HERO
+       Swiss 721 Light Extended — fuente real cargada via @font-face
+       104px, weight 300, letter-spacing -0.02em
+    ════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 24vh var(--px) 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Fade negro en el borde inferior — tapa el corte del orb sin afectar el texto */
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(0,0,0,0.15) 30%,
+        rgba(0,0,0,0.55) 60%,
+        var(--black) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #hero > *:not(.grid-lines):not(.hero-bg) { position: relative; z-index: 2; }
+
+    /* ── Grid cuadriculado lado derecho ── */
+    .hero-grid-overlay {
+      position: absolute;
+      top: 0; right: 0;
+      width: 52%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg,   transparent, transparent 59px, rgba(0,0,0,0.35) 60px),
+        repeating-linear-gradient(90deg,  transparent, transparent 59px, rgba(0,0,0,0.35) 60px);
+      -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+      mask-image: linear-gradient(to left, black 50%, transparent 100%);
+    }
+
+    /* ── Texto vertical derecha ── */
+    .hero-vert-text {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 48px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-family: 'Swiss721', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.28);
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 11;
+      pointer-events: none;
+    }
+
+    /* ── Hero background — flame streaks / light rays ── */
+    #hero {
+      background: #0d0402;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-text-block {
+      /* container — children scaled individually */
+    }
+
+    .hero-tag {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero-heading {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(40px, 6.5vw, 96px);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      display: block;
+    }
+
+    .hero-heading .line {
+      display: block;
+    }
+
+    .hero-accent {
+      color: var(--accent);
+    }
+
+    .hero-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      margin: 28px 0;
+    }
+
+    /* Cycling words wrapper */
+    .hero-cycle-wrapper {
+      position: relative;
+      height: clamp(50px, 8vw, 106px);
+      overflow: hidden;
+    }
+
+    .hero-cycle {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-cycle span {
+      position: absolute;
+      top: 0; left: 0;
+      height: clamp(50px, 8vw, 106px);
+      line-height: clamp(50px, 8vw, 106px);
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(40px, 6.5vw, 96px);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: wordFade 8s infinite;
+    }
+
+    .hero-cycle span em {
+      font-style: normal;
+    }
+
+    /* Cada palabra entra en su momento — 2s visible de 8s total */
+    .hero-cycle span:nth-child(1) { animation-delay: 0s; }
+    .hero-cycle span:nth-child(2) { animation-delay: 2s; }
+    .hero-cycle span:nth-child(3) { animation-delay: 4s; }
+    .hero-cycle span:nth-child(4) { animation-delay: 6s; }
+
+    @keyframes wordFade {
+      0%    { opacity: 0; transform: translateY(10px); }
+      8%    { opacity: 1; transform: translateY(0); }
+      20%   { opacity: 1; transform: translateY(0); }
+      28%   { opacity: 0; transform: translateY(-10px); }
+      100%  { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ── Hero subtitle + CTAs ── */
+    .hero-sub {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(14px, 1.4vw, 18px);
+      font-weight: 300;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      color: rgba(255,255,255,0.5);
+      max-width: 420px;
+      margin-top: 0;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Botón primario — pill con separador + círculo ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--accent);
+      color: #000;
+      padding: 6px 6px 6px 28px;
+      font-family: 'Swiss721', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      white-space: nowrap;
+      box-shadow: 0 0 18px rgba(236,100,66,0.45), 0 0 40px rgba(236,100,66,0.2);
+      transition: background 0.25s cubic-bezier(0.16,1,0.3,1),
+                  color 0.25s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.25s cubic-bezier(0.16,1,0.3,1);
+    }
+    .btn-primary::before {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 20px;
+      background: rgba(0,0,0,0.2);
+      flex-shrink: 0;
+      order: 2;
+    }
+    .btn-primary .btn-arrow {
+      order: 3;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.15);
+      border-radius: 50%;
+      font-size: 15px;
+      flex-shrink: 0;
+      transition: background 0.25s;
+    }
+    .btn-primary span:first-child { order: 1; }
+    .btn-primary:hover {
+      background: #000;
+      color: var(--accent);
+      box-shadow: 0 0 24px rgba(236,100,66,0.35), 0 0 60px rgba(236,100,66,0.15);
+      border: 1px solid var(--accent);
+      padding: 5px 5px 5px 27px;
+    }
+    .btn-primary:hover::before { background: rgba(236,100,66,0.25); }
+    .btn-primary:hover .btn-arrow { background: rgba(236,100,66,0.12); }
+
+    /* ── Botón ghost — texto con subrayado animado ── */
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Swiss721', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .btn-ghost::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0%;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .btn-ghost:hover { color: var(--white); }
+    .btn-ghost:hover::after { width: 100%; }
+
+    /* crosshair decoration */
+    .crosshair {
+      position: absolute;
+      right: var(--px);
+      top: 50%;
+      width: 22px; height: 22px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .crosshair::before, .crosshair::after {
+      content: ''; position: absolute; background: var(--white);
+    }
+    .crosshair::before { width: 1px; height: 100%; left: 50%; top: 0; }
+    .crosshair::after  { height: 1px; width: 100%; top: 50%; left: 0; }
+
+    /* ════════════════════════════════════════
+       PROJECTS — sticky stacking
+       Original: top: 160px, height: ~1094px, no margin, padding: 24px, gap: 8px
+    ════════════════════════════════════════ */
+    #projects {
+      position: relative;
+    }
+
+    /* Single flex column container — cards stack on top of each other as user scrolls */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;                       /* visible gap between cards */
+      padding: 16px 0;                 /* top/bottom breathing room */
+    }
+
+    /* Each card is sticky — sits at top: 80px and subsequent cards push it up */
+    .project-card {
+      position: sticky;
+      top: 80px;                        /* matches nav height */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      cursor: none;
+      border-radius: 0;
+      height: calc(100vh - 112px);
+      margin: 0;
+      padding: 0;                      /* no outer padding — inner elements handle their own */
+      gap: 0;
+      flex-shrink: 0;
+    }
+
+    /* z-index incremental: each new card stacks on top */
+    .project-card:nth-child(1) { z-index: 11; }
+    .project-card:nth-child(2) { z-index: 12; }
+    .project-card:nth-child(3) { z-index: 13; }
+    .project-card:nth-child(4) { z-index: 14; }
+    .project-card:nth-child(5) { z-index: 15; }
+
+    /* ── Card inner layout ── */
+    /* Meta row: year left, label right */
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 0;    /* 24px padding matching original */
+      font-family: 'Swiss721', sans-serif;
+      font-size: 14px;          /* exact: 14px from original */
+      font-weight: 300;
+      letter-spacing: normal;
+      line-height: 14px;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    /* Thin divider line */
+    .card-divider {
+      height: 1px;
+      margin: 8px 24px 0;
+      background: currentColor;
+      opacity: 0.25;            /* exact from original */
+      flex-shrink: 0;
+    }
+
+    /* Title row: title left, arrow right */
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 8px 24px 0;
+      flex-shrink: 0;
+    }
+
+    /* Card title: Manrope 64px, weight 500, letter-spacing -2.7px */
+    .card-title {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(32px, 4.5vw, 64px);
+      font-weight: 500;
+      letter-spacing: -0.042em;   /* -2.7px at 64px ≈ -0.042em */
+      line-height: 1.35;
+    }
+
+    .card-arrow {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(28px, 3vw, 48px);
+      font-weight: 300;
+      flex-shrink: 0;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
+                  opacity  0.4s cubic-bezier(0.16,1,0.3,1);
+      margin-top: 2px;
+      display: inline-block;
+    }
+
+    .project-card:hover .card-arrow {
+      transform: translate(8px, -8px);
+      opacity: 1;
+    }
+
+    /* Image fills remaining space — no side padding, goes edge to edge */
+    .card-image {
+      flex: 1 1 auto;
+      overflow: hidden;
+      border-radius: 0;
+      min-height: 0;
+      margin-top: 16px;           /* small gap between title and image */
+    }
+
+    .card-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .project-card:hover .card-image img { transform: scale(1.04); }
+
+    /* ── Card color themes ── */
+    .card-orange { background: var(--accent); color: #000; }
+    .card-white  { background: #fff; color: #000; }
+    .card-white .card-title,
+    .card-white .card-arrow { color: var(--teal); }
+    .card-dark   { background: #000; color: #fff; }
+    .card-dark .card-title,
+    .card-dark .card-arrow { color: var(--mint); }
+    .card-yellow { background: var(--yellow); color: #000; }
+    .card-gray   { background: #000; color: #fff; }
+
+    /* ════════════════════════════════════════
+       CLIENTS MARQUEE
+    ════════════════════════════════════════ */
+    .clients-marquee-wrap {
+      background: var(--black);
+      padding: 48px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      overflow: hidden;
+    }
+
+    .clients-marquee-label {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.25);
+      white-space: nowrap;
+      padding-left: var(--px);
+      flex-shrink: 0;
+    }
+
+    .clients-marquee-track-wrap {
+      overflow: hidden;
+      flex: 1;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+
+    /* Un solo track que contiene los dos sets — se anima como bloque único */
+    .clients-marquee-track {
+      display: flex;
+      align-items: center;
+      width: max-content;
+      animation: marqueeScroll 32s linear infinite;
+    }
+
+    .client-item {
+      display: flex;
+      align-items: center;
+      padding: 0 48px;
+      flex-shrink: 0;
+      opacity: 0.35;
+      transition: opacity 0.3s;
+    }
+
+    .client-item:hover {
+      opacity: 0.7;
+    }
+
+    .client-item img {
+      height: 44px;
+      width: auto;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
+
+    .client-sep {
+      color: rgba(255,255,255,0.12);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    @keyframes marqueeScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ════════════════════════════════════════
+       ABOUT
+    ════════════════════════════════════════ */
+    #about {
+      background: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 42%;
+      align-items: stretch;
+      min-height: 80vh;
+      margin-top: 80px;
+    }
+
+    .about-text-col {
+      padding: 80px var(--px) 80px var(--px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .about-top {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Stats grid 2×2 — Opción D */
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 48px;
+    }
+
+    .about-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 36px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Left column cells get right border + right padding */
+    .about-stat:nth-child(odd) {
+      padding-right: 48px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Right column cells get left padding */
+    .about-stat:nth-child(even) {
+      padding-left: 48px;
+    }
+
+    /* Last row — no bottom border */
+    .about-stat:nth-child(3),
+    .about-stat:nth-child(4) {
+      border-bottom: none;
+    }
+
+    /* Number row: big number + orange dot */
+    .stat-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      align-self: flex-start; /* sits at top-right of the number */
+      margin-top: 6px;
+    }
+
+    .stat-number {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(48px, 5.5vw, 80px);
+      font-weight: 300;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      color: var(--white);
+    }
+
+    .stat-label {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.4;
+      max-width: 260px;
+    }
+
+    .section-label {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      display: inline-block;
+      width: 32px; height: 1px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .about-isotipo {
+      width: 52px;
+      height: 52px;
+      fill: rgba(255,255,255,0.9);
+      margin: 32px 0 24px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .about-text {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(26px, 3.2vw, 48px);
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      line-height: 1.3;
+      color: rgba(255,255,255,0.22);  /* base apagada */
+      margin-bottom: 40px;
+    }
+
+    /* Palabras clave brillantes — Opción A */
+    .about-text .bright {
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 11px 22px;
+      font-family: 'Swiss721', sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      width: fit-content;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .about-image-col {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-image-col img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) brightness(0.52);
+      transition: filter 0.6s, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .about-image-col:hover img {
+      filter: grayscale(70%) brightness(0.65);
+      transform: scale(1.03);
+    }
+
+    /* ════════════════════════════════════════
+       HOW IT WORKS — estilo original
+       Label izquierda · Heading derecha · Steps en zigzag
+    ════════════════════════════════════════ */
+
+    /* ════════════════════════════════════════
+       CONTACT
+    ════════════════════════════════════════ */
+    #contact {
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+      padding: 120px var(--px) 140px;
+    }
+
+    #contact > *:not(.grid-lines) { position: relative; z-index: 1; }
+
+    .contact-label {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 28px;
+    }
+
+    .contact-sub {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(13px, 1.2vw, 16px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: -0.01em;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 480px;
+    }
+
+    .contact-sub em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .contact-heading {
+      font-family: 'Swiss721', sans-serif;   /* original uses Manrope for contact */
+      font-size: clamp(28px, 4.5vw, 64px);
+      font-weight: 500;
+      letter-spacing: -0.042em;
+      line-height: 1.35;
+      color: var(--white);
+      max-width: 860px;
+      margin-bottom: 52px;
+    }
+
+    .crosshair-abs {
+      position: absolute;
+      right: calc(var(--px) * 1.5);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px; height: 22px;
+      opacity: 0.18;
+    }
+    .crosshair-abs::before, .crosshair-abs::after {
+      content: ''; position: absolute; background: var(--white);
+    }
+    .crosshair-abs::before { width: 1px; height: 100%; left: 50%; top: 0; }
+    .crosshair-abs::after  { height: 1px; width: 100%; top: 50%; left: 0; }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+      padding: 100px var(--px) 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    /* Gradiente naranja de abajo hacia arriba */
+    footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 100% 80% at 50% 110%,
+        rgba(236,100,66,0.85) 0%,
+        rgba(236,100,66,0.5)  25%,
+        rgba(236,100,66,0.18) 50%,
+        rgba(236,100,66,0.04) 68%,
+        transparent           80%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    footer > * { position: relative; z-index: 1; }
+
+    /* Eyebrow */
+    .footer-eyebrow {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.35);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .footer-eyebrow::after {
+      content: '';
+      display: inline-block;
+      width: 32px; height: 1px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Big heading */
+    .footer-heading {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(48px, 7vw, 110px);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      color: var(--white);
+      max-width: 900px;
+      margin-bottom: 32px;
+    }
+
+    /* Sub */
+    .footer-sub {
+      font-family: 'Swiss721', sans-serif;
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.4);
+      max-width: 420px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+      margin-bottom: 40px;
+    }
+
+    .footer-sub em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    /* CTA row */
+    .footer-cta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-email {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+    }
+
+    .footer-email:hover { color: var(--white); }
+
+    /* Bottom bar */
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 28px;
+      margin-top: 80px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: -0.01em;
+    }
+
+    .footer-socials { display: flex; gap: 24px; align-items: center; }
+
+    .footer-socials a {
+      font-family: 'Swiss721', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.32);
+      transition: color 0.2s;
+      letter-spacing: -0.01em;
+    }
+
+    .footer-socials a:hover { color: var(--white); }
+
+    /* ════════════════════════════════════════
+       SCROLL REVEAL
+       Hero items start visible to avoid flash of invisible text.
+       JS adds .reveal class after font load, or sets .visible on DOMContentLoaded.
+    ════════════════════════════════════════ */
+    .reveal {
+      opacity: 1;                /* default visible — JS will set up animation */
+      transform: translateY(0);
+      transition: opacity 0.75s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.75s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* JS adds this class to enable the hidden state before reveal */
+    .reveal.will-animate {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-stagger > * {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0s;   opacity:1; transform:none; }
+    .reveal-stagger.visible > *:nth-child(2) { transition-delay:.09s;  opacity:1; transform:none; }
+    .reveal-stagger.visible > *:nth-child(3) { transition-delay:.18s;  opacity:1; transform:none; }
+    .reveal-stagger.visible > *:nth-child(4) { transition-delay:.27s;  opacity:1; transform:none; }
+    .reveal-stagger.visible > *:nth-child(5) { transition-delay:.36s;  opacity:1; transform:none; }
+
+    /* ════════════════════════════════════════
+       CUSTOM CURSOR
+    ════════════════════════════════════════ */
+    .cursor-dot {
+      position: fixed;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      will-change: left, top;
+    }
+
+    .cursor-ring {
+      position: fixed;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.3);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      will-change: left, top;
+      transition: width 0.28s, height 0.28s, border-color 0.28s;
+    }
+
+    /* ════════════════════════════════════════
+       ACCESSIBILITY — focus-visible
+    ════════════════════════════════════════ */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ════════════════════════════════════════
+       ACCESSIBILITY — prefers-reduced-motion
+    ════════════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-cycle { animation: none; }
+      .hero-cycle span:not(:first-child) { display: none; }
+      .reveal, .reveal-stagger > * {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .about-image-col img,
+      .project-card .card-image img,
+      .card-arrow { transition: none !important; }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE — tablet (768px–1280px)
+    ════════════════════════════════════════ */
+    @media (min-width: 769px) and (max-width: 1280px) {
+      #about { grid-template-columns: 1fr 38%; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      .about-stat:nth-child(odd) { padding-right: 28px; }
+      .about-stat:nth-child(even) { padding-left: 28px; }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE — mobile
+    ════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      :root { --px: 20px; }
+      body { cursor: auto; }
+      .cursor-dot, .cursor-ring { display: none; }
+
+      nav { padding: 16px var(--px); }
+
+      /* Overlay menu: single column on mobile */
+      .menu-overlay { grid-template-columns: 1fr; }
+      .menu-right    { display: none; }
+      .menu-left     { padding: 100px var(--px) 60px; }
+      .menu-nav a    { font-size: clamp(28px, 9vw, 48px); padding: 14px 0; }
+
+      #hero { padding: 120px var(--px) 60px; }
+
+      .project-card {
+        top: 56px;
+        height: calc(100vh - 68px);
+        margin: 0 10px;
+        padding: 16px;
+      }
+
+      #about { grid-template-columns: 1fr; }
+      .about-image-col { height: 70vw; }
+      .about-text-col { padding: 60px var(--px); justify-content: flex-start; gap: 48px; }
+      .about-stats { grid-template-columns: 1fr 1fr; margin-top: 0; }
+      .about-stat { padding: 24px 0; }
+      .about-stat:nth-child(odd) { padding-right: 20px; }
+      .about-stat:nth-child(even) { padding-left: 20px; }
+      .stat-number { font-size: clamp(36px, 9vw, 56px); }
+      .stat-label { font-size: 13px; }
+
+.crosshair-abs { display: none; }
+
+      footer { min-height: auto; padding: 80px var(--px) 40px; }
+      .footer-bottom { margin-top: 48px; flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+
+    /* ══════════════════════════════════════
+       SERVICES — controlled scroll stack
+       ══════════════════════════════════════ */
+    #services {
+      position: relative;
+      height: 500vh; /* 4 panels + extra hold on last panel */
+    }
+    .srv-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .srv-stack {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.75s cubic-bezier(0.77, 0, 0.18, 1);
+      will-change: transform;
+    }
+    .srv-panel {
+      position: absolute;
+      left: 0; right: 0;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 48% 52%;
+      align-items: center;
+      overflow: hidden;
+    }
+    .srv-panel:nth-child(1) { top: 0%; }
+    .srv-panel:nth-child(2) { top: 100%; }
+    .srv-panel:nth-child(3) { top: 200%; }
+    .srv-panel:nth-child(4) { top: 300%; }
+
+    /* Left column */
+    .srv-left {
+      padding: 0 var(--px);
+      position: relative;
+      z-index: 2;
+    }
+    .srv-eyebrow {
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .srv-eyebrow-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .srv-title {
+      font-size: 130px;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+      margin-bottom: 32px;
+      color: #fff;
+    }
+    .srv-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .srv-desc {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.5);
+      max-width: 340px;
+      margin-bottom: 28px;
+    }
+    .srv-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .srv-tag {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    /* Right column */
+    .srv-right {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .srv-orb {
+      position: absolute;
+      right: -5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 70%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      filter: blur(50px);
+      opacity: 0.65;
+    }
+    .srv-glyph {
+      position: relative;
+      z-index: 2;
+      font-size: 320px;
+      line-height: 1;
+      filter: drop-shadow(0 0 60px currentColor) drop-shadow(0 0 120px currentColor);
+      user-select: none;
+    }
+    .srv-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Dot navigation */
+    .srv-dots {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+    .srv-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .srv-dot.active {
+      background: #fff;
+      transform: scale(1.5);
+    }
+
+    /* Panel-specific colors */
+    .srv-p1 { background: #090402; }
+    .srv-p1 .srv-glyph { color: rgba(236,100,66,0.9); }
+    .srv-p1 .srv-title em { color: #EC6442; }
+
+    .srv-p2 { background: #04050e; }
+    .srv-p2 .srv-glyph { color: rgba(80,100,255,0.9); }
+    .srv-p2 .srv-title em { color: #6478ff; }
+    .srv-p2 .srv-eyebrow-dot { background: #6478ff; }
+
+    .srv-p3 { background: #030a05; }
+    .srv-p3 .srv-glyph { color: rgba(40,200,100,0.9); }
+    .srv-p3 .srv-title em { color: #28c864; }
+    .srv-p3 .srv-eyebrow-dot { background: #28c864; }
+
+    .srv-p4 { background: #080408; }
+    .srv-p4 .srv-glyph { color: rgba(180,60,240,0.9); }
+    .srv-p4 .srv-title em { color: #b43cf0; }
+    .srv-p4 .srv-eyebrow-dot { background: #b43cf0; }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor-dot"  id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ══ OVERLAY MENU ══ -->
+<div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <div class="menu-left">
+    <nav>
+      <ul class="menu-nav">
+        <li>
+          <a href="#projects" class="menu-link" data-img="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900&auto=format&fit=crop&q=80">
+            <span>projects</span>
+            <span class="menu-num">01</span>
+          </a>
+        </li>
+        <li>
+          <a href="#about" class="menu-link" data-img="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&auto=format&fit=crop&q=80">
+            <span>about</span>
+            <span class="menu-num">02</span>
+          </a>
+        </li>
+        <li>
+          <a href="#contact" class="menu-link" data-img="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&auto=format&fit=crop&q=80">
+            <span>contact</span>
+            <span class="menu-num">04</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="menu-footer">
+      <a href="#">Instagram</a>
+      <a href="#">Twitter / X</a>
+      <a href="#">LinkedIn</a>
+      <a href="mailto:hello@siddart.co">hello@siddart.co</a>
+    </div>
+  </div>
+  <div class="menu-right">
+    <div class="menu-image-panel" id="menuImagePanel">
+      <img id="menuImg1" src="" alt="" />
+      <img id="menuImg2" src="" alt="" />
+    </div>
+  </div>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <img class="logo-img" src="logo-white.png" alt="Siddart" />
+  </a>
+  <button class="nav-hamburger" id="menuToggle" aria-label="Toggle menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="grid-lines" aria-hidden="true">
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+    <div class="grid-line"></div>
+  </div>
+
+  <!-- Hero background — flame streaks + radial orbs -->
+  <svg class="hero-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <radialGradient id="heroOrb" cx="68%" cy="52%" r="55%">
+        <stop offset="0%"   stop-color="rgba(220,65,15,1)"/>
+        <stop offset="30%"  stop-color="rgba(190,45,10,0.85)"/>
+        <stop offset="60%"  stop-color="rgba(120,20,5,0.5)"/>
+        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+      </radialGradient>
+      <radialGradient id="heroHighlight" cx="72%" cy="45%" r="28%">
+        <stop offset="0%"   stop-color="rgba(255,140,60,0.9)"/>
+        <stop offset="50%"  stop-color="rgba(240,90,30,0.4)"/>
+        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+      </radialGradient>
+      <linearGradient id="heroLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"  stop-color="rgba(8,2,1,0.92)"/>
+        <stop offset="45%" stop-color="rgba(0,0,0,0)"/>
+      </linearGradient>
+      <linearGradient id="heroTop" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"  stop-color="rgba(5,1,0,0.85)"/>
+        <stop offset="40%" stop-color="rgba(0,0,0,0)"/>
+      </linearGradient>
+      <filter id="raysBlur">
+        <feGaussianBlur stdDeviation="5"/>
+      </filter>
+    </defs>
+    <!-- Base dark -->
+    <rect width="1440" height="900" fill="#0d0402"/>
+    <!-- Main orb -->
+    <rect width="1440" height="900" fill="url(#heroOrb)"/>
+    <!-- Highlight -->
+    <rect width="1440" height="900" fill="url(#heroHighlight)"/>
+    <!-- Light rays / flame streaks -->
+    <g filter="url(#raysBlur)" opacity="0.55" style="mix-blend-mode:screen">
+      <path d="M 820 900 C 810 600, 830 300, 815 0"   stroke="rgba(255,170,80,0.55)"  stroke-width="18" fill="none"/>
+      <path d="M 870 900 C 865 580, 880 280, 862 0"   stroke="rgba(255,150,60,0.45)"  stroke-width="12" fill="none"/>
+      <path d="M 940 900 C 932 600, 955 320, 938 0"   stroke="rgba(255,180,90,0.5)"   stroke-width="22" fill="none"/>
+      <path d="M 990 900 C 985 570, 1005 270, 988 0"  stroke="rgba(255,130,50,0.38)"  stroke-width="9"  fill="none"/>
+      <path d="M 1060 900 C 1050 610, 1070 310, 1052 0" stroke="rgba(255,190,100,0.52)" stroke-width="28" fill="none"/>
+      <path d="M 1120 900 C 1115 590, 1138 290, 1118 0" stroke="rgba(255,145,65,0.4)"  stroke-width="10" fill="none"/>
+      <path d="M 1180 900 C 1172 620, 1195 330, 1176 0" stroke="rgba(255,175,85,0.48)" stroke-width="20" fill="none"/>
+      <path d="M 1240 900 C 1235 600, 1255 300, 1238 0" stroke="rgba(255,120,45,0.35)" stroke-width="8"  fill="none"/>
+      <path d="M 1300 900 C 1292 580, 1315 270, 1296 0" stroke="rgba(255,165,75,0.42)" stroke-width="15" fill="none"/>
+      <path d="M 1360 900 C 1355 600, 1375 305, 1358 0" stroke="rgba(255,190,95,0.3)"  stroke-width="6"  fill="none"/>
+      <path d="M 760 900 C 752 610, 775 320, 758 0"    stroke="rgba(255,155,70,0.38)"  stroke-width="11" fill="none"/>
+      <path d="M 700 900 C 695 580, 718 285, 700 0"    stroke="rgba(255,140,60,0.28)"  stroke-width="7"  fill="none"/>
+      <path d="M 1400 900 C 1395 590, 1415 290, 1398 0" stroke="rgba(255,200,110,0.25)" stroke-width="5" fill="none"/>
+      <path d="M 640 900 C 636 600, 658 310, 641 0"    stroke="rgba(255,130,55,0.22)"  stroke-width="5"  fill="none"/>
+    </g>
+    <!-- Vignette left -->
+    <rect width="1440" height="900" fill="url(#heroLeft)"/>
+    <!-- Vignette top -->
+    <rect width="1440" height="900" fill="url(#heroTop)"/>
+    <!-- Máscara de fade para la grilla: difumina izquierda, derecha y arriba -->
+    <defs>
+      <linearGradient id="gridFadeX" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="black" stop-opacity="1"/>
+        <stop offset="12%"  stop-color="black" stop-opacity="0"/>
+        <stop offset="85%"  stop-color="black" stop-opacity="0"/>
+        <stop offset="100%" stop-color="black" stop-opacity="1"/>
+      </linearGradient>
+      <linearGradient id="gridFadeY" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"  stop-color="black" stop-opacity="1"/>
+        <stop offset="10%" stop-color="black" stop-opacity="0"/>
+        <stop offset="90%" stop-color="black" stop-opacity="0"/>
+        <stop offset="100%" stop-color="black" stop-opacity="1"/>
+      </linearGradient>
+      <mask id="gridMask">
+        <rect x="640" y="0" width="800" height="900" fill="white"/>
+        <rect x="640" y="0" width="800" height="900" fill="url(#gridFadeX)"/>
+        <rect x="640" y="0" width="800" height="900" fill="url(#gridFadeY)"/>
+      </mask>
+    </defs>
+    <!-- Grid cuadriculado derecha — con fade en bordes -->
+    <g opacity="0.25" mask="url(#gridMask)">
+      <line x1="640" y1="0"   x2="1440" y2="0"   stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="60"  x2="1440" y2="60"  stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="120" x2="1440" y2="120" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="180" x2="1440" y2="180" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="240" x2="1440" y2="240" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="300" x2="1440" y2="300" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="360" x2="1440" y2="360" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="420" x2="1440" y2="420" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="480" x2="1440" y2="480" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="540" x2="1440" y2="540" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="600" x2="1440" y2="600" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="660" x2="1440" y2="660" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="720" x2="1440" y2="720" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="780" x2="1440" y2="780" stroke="white" stroke-width="0.7"/>
+      <line x1="640" y1="840" x2="1440" y2="840" stroke="white" stroke-width="0.7"/>
+      <line x1="640"  y1="0" x2="640"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="700"  y1="0" x2="700"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="760"  y1="0" x2="760"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="820"  y1="0" x2="820"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="880"  y1="0" x2="880"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="940"  y1="0" x2="940"  y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1000" y1="0" x2="1000" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1060" y1="0" x2="1060" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1120" y1="0" x2="1120" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1180" y1="0" x2="1180" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1240" y1="0" x2="1240" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1300" y1="0" x2="1300" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1360" y1="0" x2="1360" y2="900" stroke="white" stroke-width="0.7"/>
+      <line x1="1420" y1="0" x2="1420" y2="900" stroke="white" stroke-width="0.7"/>
+    </g>
+    <!-- Texto vertical derecha — posicionado via JS -->
+    <text id="heroVertText"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-family="Swiss721, sans-serif"
+      font-size="7"
+      font-weight="300"
+      letter-spacing="2.5"
+      fill="white"
+      fill-opacity="0.18"
+    >BRAND IDENTITY · WEB DESIGN · AD CREATIVE</text>
+  </svg>
+
+  <div class="crosshair"></div>
+
+  <div class="hero-text-block reveal">
+    <div class="hero-tag">Siddart Studio · Brand & Digital</div>
+    <h1 class="hero-heading"><span class="line">Design that</span><span class="line">makes companies</span></h1>
+    <div class="hero-cycle-wrapper">
+      <div class="hero-cycle">
+        <span><em>sell more.</em></span>
+        <span><em>brand identity.</em></span>
+        <span><em>web experience.</em></span>
+        <span><em>ad creative.</em></span>
+      </div>
+    </div>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">Brand identities and digital experiences that turn attention into revenue — for companies ready to scale.</p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow">→</span></a>
+      <a href="#projects" class="btn-ghost">See our work ↓</a>
+    </div>
+  </div>
+
+
+</section>
+
+<!-- ══ PROJECTS — sticky stacking ══ -->
+<section id="projects">
+  <div class="cards-stack">
+
+    <!-- Card 1: Orange -->
+    <a href="#" class="project-card card-orange">
+      <div class="card-meta">
+        <span>2024</span>
+        <span>Studie case</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title-row">
+        <span class="card-title">todos por una real pasión</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1400&auto=format&fit=crop" alt="todos por una real pasión" loading="lazy" />
+      </div>
+    </a>
+
+    <!-- Card 2: White -->
+    <a href="#" class="project-card card-white">
+      <div class="card-meta">
+        <span>2023</span>
+        <span>Studie case</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title-row">
+        <span class="card-title">café santa barbara</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&auto=format&fit=crop" alt="café santa barbara" loading="lazy" />
+      </div>
+    </a>
+
+    <!-- Card 3: Dark -->
+    <a href="#" class="project-card card-dark">
+      <div class="card-meta">
+        <span>2023</span>
+        <span>Studie case</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title-row">
+        <span class="card-title">snackify</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?w=1400&auto=format&fit=crop" alt="snackify" loading="lazy" />
+      </div>
+    </a>
+
+    <!-- Card 4: Yellow -->
+    <a href="#" class="project-card card-yellow">
+      <div class="card-meta">
+        <span>2023</span>
+        <span>Studie case</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title-row">
+        <span class="card-title">zengo</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=1400&auto=format&fit=crop" alt="zengo" loading="lazy" />
+      </div>
+    </a>
+
+    <!-- Card 5: Gray -->
+    <a href="#" class="project-card card-gray">
+      <div class="card-meta">
+        <span>2023</span>
+        <span>Studie case</span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title-row">
+        <span class="card-title">roverride</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1400&auto=format&fit=crop" alt="roverride" loading="lazy" />
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══ CLIENTS MARQUEE ══ -->
+<div class="clients-marquee-wrap">
+  <div class="clients-marquee-label">trusted by</div>
+  <div class="clients-marquee-track-wrap">
+    <div class="clients-marquee-track">
+      <!-- Set 1 -->
+      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
+      <span class="client-sep">—</span>
+      <!-- Set 2 — copia idéntica pegada al final, animación hasta -50% = loop perfecto -->
+      <span class="client-item"><img src="logo-white.png" alt="Real Pasión" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Café Santa Barbara" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Stayverz" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Nitro Studio" /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Siddart Co." /></span>
+      <span class="client-sep">—</span>
+      <span class="client-item"><img src="logo-white.png" alt="Vetra Agency" /></span>
+      <span class="client-sep">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SERVICES ══ -->
+<section id="services">
+  <div class="srv-sticky">
+  <div class="srv-stack" id="srvStack">
+
+    <!-- 01 Brand Identity -->
+    <div class="srv-panel srv-p1">
+      <div class="srv-left">
+        <div class="srv-eyebrow"><span class="srv-eyebrow-dot"></span>01 — brand identity</div>
+        <div class="srv-title">Brand<br><em>Identity</em></div>
+        <p class="srv-desc">We craft identities that command attention and communicate authority from the first impression.</p>
+        <div class="srv-tags">
+          <span class="srv-tag">Logo Design</span>
+          <span class="srv-tag">Visual System</span>
+          <span class="srv-tag">Brand Guidelines</span>
+          <span class="srv-tag">Naming</span>
+        </div>
+      </div>
+      <div class="srv-right">
+        <div class="srv-orb" style="background:radial-gradient(circle,rgba(236,100,66,0.8) 0%,rgba(180,40,10,0.4) 50%,transparent 100%);"></div>
+        <div class="srv-glyph">◈</div>
+        <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="svvig1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#090402" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#090402" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="900" fill="url(#svvig1)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 02 Web Experience -->
+    <div class="srv-panel srv-p2">
+      <div class="srv-left">
+        <div class="srv-eyebrow"><span class="srv-eyebrow-dot"></span>02 — web experience</div>
+        <div class="srv-title">Web<br><em>Experience</em></div>
+        <p class="srv-desc">We design and build digital experiences that feel inevitable — fast, intuitive, and built to convert.</p>
+        <div class="srv-tags">
+          <span class="srv-tag">UI / UX Design</span>
+          <span class="srv-tag">Development</span>
+          <span class="srv-tag">Motion</span>
+          <span class="srv-tag">CRO</span>
+        </div>
+      </div>
+      <div class="srv-right">
+        <div class="srv-orb" style="background:radial-gradient(circle,rgba(80,100,255,0.8) 0%,rgba(40,60,200,0.4) 50%,transparent 100%);"></div>
+        <div class="srv-glyph">⬡</div>
+        <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="svvig2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#04050e" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#04050e" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="900" fill="url(#svvig2)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 03 Ad Creative -->
+    <div class="srv-panel srv-p3">
+      <div class="srv-left">
+        <div class="srv-eyebrow"><span class="srv-eyebrow-dot"></span>03 — ad creative</div>
+        <div class="srv-title">Ad<br><em>Creative</em></div>
+        <p class="srv-desc">Scroll-stopping visuals and copy that cuts through noise and drives measurable performance.</p>
+        <div class="srv-tags">
+          <span class="srv-tag">Paid Social</span>
+          <span class="srv-tag">Video</span>
+          <span class="srv-tag">Copywriting</span>
+          <span class="srv-tag">Strategy</span>
+        </div>
+      </div>
+      <div class="srv-right">
+        <div class="srv-orb" style="background:radial-gradient(circle,rgba(40,200,100,0.8) 0%,rgba(10,140,60,0.4) 50%,transparent 100%);"></div>
+        <div class="srv-glyph">⬟</div>
+        <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="svvig3" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#030a05" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#030a05" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="900" fill="url(#svvig3)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 04 Growth Strategy -->
+    <div class="srv-panel srv-p4">
+      <div class="srv-left">
+        <div class="srv-eyebrow"><span class="srv-eyebrow-dot"></span>04 — growth strategy</div>
+        <div class="srv-title">Growth<br><em>Strategy</em></div>
+        <p class="srv-desc">We map the full funnel and build the engine — from acquisition to retention to scale.</p>
+        <div class="srv-tags">
+          <span class="srv-tag">Funnel Design</span>
+          <span class="srv-tag">Analytics</span>
+          <span class="srv-tag">SEO</span>
+          <span class="srv-tag">Retention</span>
+        </div>
+      </div>
+      <div class="srv-right">
+        <div class="srv-orb" style="background:radial-gradient(circle,rgba(180,60,240,0.8) 0%,rgba(120,20,180,0.4) 50%,transparent 100%);"></div>
+        <div class="srv-glyph">❋</div>
+        <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="svvig4" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#080408" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#080408" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="900" fill="url(#svvig4)"/>
+        </svg>
+      </div>
+    </div>
+
+  </div><!-- /srv-stack -->
+
+  <!-- Dot navigation -->
+  <div class="srv-dots" id="srvDots">
+    <div class="srv-dot active" data-idx="0"></div>
+    <div class="srv-dot" data-idx="1"></div>
+    <div class="srv-dot" data-idx="2"></div>
+    <div class="srv-dot" data-idx="3"></div>
+  </div>
+
+  </div><!-- /srv-sticky -->
+
+</section><!-- /services -->
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="about-text-col">
+    <div class="about-top">
+      <div class="section-label">about</div>
+      <svg class="about-isotipo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" aria-hidden="true">
+        <polygon points="334.63 453.47 334.63 626.8 377.46 626.8 377.46 660.92 295.66 660.92 295.66 419.35 377.46 419.35 377.46 453.47 334.63 453.47"/>
+        <polygon points="784.34 419.35 784.34 660.92 702.54 660.92 702.54 626.8 745.37 626.8 745.37 453.47 702.54 453.47 702.54 419.35 784.34 419.35"/>
+        <path d="M663.54,586.23c-1.12-43.69-43.21-64.27-61.34-73.08l-85.16-42.93c-.98-.5-3.98-2.01-2.95-6.35,1.03-4.34,4.39-4.34,5.49-4.34h137.55v-40.23h-137.55c-21.68,0-39.62,14.17-44.63,35.27-5.02,21.09,4.62,41.82,23.98,51.58l85.29,42.99.26.13c27.6,13.42,38.5,24.08,38.85,38,.44,16.97-12.95,31.94-29.83,33.36-5.39.45-10.6-.34-15.46-2.37-5.16-2.15-9.85-6.05-13.56-11.28l-48.39-68.24c-14.06-21.81-32.97-43.96-66.48-43.96-21.97,0-43.15,10.55-56.66,28.22-11.56,15.11-16.73,34.44-15.22,55.86h40.36c-1.5-12.82.79-23.54,6.82-31.42,7.01-9.16,17.36-12.43,24.71-12.43,10.31,0,18.99,4.23,32.88,25.87l49.17,69.38c8.08,11.4,18.77,20.09,30.92,25.15,10.72,4.46,22.58,6.3,34.29,5.32,38.38-3.23,67.67-35.95,66.68-74.48Z"/>
+      </svg>
+      <p class="about-text reveal">
+        We don't just make things <span class="bright">look good.</span> We build <span class="bright">brands</span> that command <span class="bright">authority,</span> <span class="bright">websites</span> that convert, and campaigns <span class="bright">that scale</span> — for companies that mean <span class="bright">business.</span>
+      </p>
+      <a href="#contact" class="btn-outline reveal">about us ↗</a>
+    </div>
+    <div class="about-stats reveal">
+      <div class="about-stat">
+        <div class="stat-top">
+          <span class="stat-number">5+</span>
+          <span class="stat-dot"></span>
+        </div>
+        <span class="stat-label">years scaling brands across digital & physical touchpoints</span>
+      </div>
+      <div class="about-stat">
+        <div class="stat-top">
+          <span class="stat-number">40+</span>
+          <span class="stat-dot"></span>
+        </div>
+        <span class="stat-label">projects delivered for brands across latam, europe & north america</span>
+      </div>
+      <div class="about-stat">
+        <div class="stat-top">
+          <span class="stat-number">3x</span>
+          <span class="stat-dot"></span>
+        </div>
+        <span class="stat-label">average ROI on brand investment in year one</span>
+      </div>
+      <div class="about-stat">
+        <div class="stat-top">
+          <span class="stat-number">12</span>
+          <span class="stat-dot"></span>
+        </div>
+        <span class="stat-label">industries served across consumer, tech, food & lifestyle</span>
+      </div>
+    </div>
+  </div>
+  <div class="about-image-col">
+    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&auto=format&fit=crop&q=80" alt="portrait" loading="lazy" />
+  </div>
+</section>
+
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-eyebrow">let's talk</div>
+    <h2 class="footer-heading">Ready to build something great?</h2>
+    <p class="footer-sub">We open <em>a limited number of new client spots</em> each month. If you're serious about growth, let's talk.</p>
+    <div class="footer-cta">
+      <a href="mailto:hello@siddart.co" class="btn-primary"><span>Book a strategy call</span><span class="btn-arrow">→</span></a>
+      <a href="mailto:hello@siddart.co" class="footer-email">hello@siddart.co</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Siddart Studio</span>
+    <span class="footer-copy">Design for companies that mean business.</span>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter / X</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Custom cursor ─────────────────────────────────────────────
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = -200, my = -200, rx = -200, ry = -200;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top  = my + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx) * 0.13;
+  ry += (my - ry) * 0.13;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width  = '56px';
+    ring.style.height = '56px';
+    ring.style.borderColor = 'rgba(236,100,66,0.5)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width  = '34px';
+    ring.style.height = '34px';
+    ring.style.borderColor = 'rgba(255,255,255,0.3)';
+  });
+});
+
+// ── Scroll reveal ─────────────────────────────────────────────
+// Set up non-hero .reveal elements to animate on scroll
+const nonHeroReveals = document.querySelectorAll('.reveal:not(#hero .reveal), .reveal-stagger');
+
+// Add will-animate to non-hero reveals so they start hidden
+nonHeroReveals.forEach(el => el.classList.add('will-animate'));
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.remove('will-animate');
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+nonHeroReveals.forEach(el => revealObs.observe(el));
+
+// ── Full-screen overlay menu ──────────────────────────────────
+const menuToggle  = document.getElementById('menuToggle');
+const menuOverlay = document.getElementById('menuOverlay');
+const menuLinks   = document.querySelectorAll('.menu-link');
+const img1        = document.getElementById('menuImg1');
+const img2        = document.getElementById('menuImg2');
+const logoImg     = document.querySelector('.logo-img');
+
+let menuOpen      = false;
+let activeImg     = img1;   // which img is currently shown
+let inactiveImg   = img2;   // which img is ready to receive next src
+
+function openMenu() {
+  const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.paddingRight = scrollbarW + 'px';
+  document.body.style.overflow = 'hidden';
+  menuOpen = true;
+  menuOverlay.classList.add('is-open');
+  menuToggle.classList.add('is-open');
+  menuToggle.setAttribute('aria-expanded', 'true');
+  logoImg.src = 'logo-black.png';
+}
+
+function closeMenu() {
+  menuOpen = false;
+  menuOverlay.classList.remove('is-open');
+  menuToggle.classList.remove('is-open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  img1.classList.remove('is-visible');
+  img2.classList.remove('is-visible');
+  logoImg.src = 'logo-white.png';
+}
+
+menuToggle.addEventListener('click', () => {
+  menuOpen ? closeMenu() : openMenu();
+});
+
+// Close when clicking a link
+menuLinks.forEach(link => {
+  // Image hover — crossfade between two img elements
+  link.addEventListener('mouseenter', () => {
+    const src = link.dataset.img;
+    if (!src) return;
+    // Load new src into inactive img
+    inactiveImg.src = src;
+    inactiveImg.classList.add('is-visible');
+    activeImg.classList.remove('is-visible');
+    // Swap references
+    [activeImg, inactiveImg] = [inactiveImg, activeImg];
+  });
+
+  link.addEventListener('click', () => {
+    closeMenu();
+  });
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && menuOpen) closeMenu();
+});
+
+// ── Navbar shrink on scroll ───────────────────────────────────
+const navbar = document.getElementById('navbar');
+const navPx  = 'clamp(24px, 5vw, 80px)';
+window.addEventListener('scroll', () => {
+  if (!menuOpen) {
+    navbar.style.padding = window.scrollY > 40
+      ? `14px ${navPx}`
+      : `22px ${navPx}`;
+  }
+}, { passive: true });
+
+// ── Services — sticky scroll driven panels ────────────────────
+(function() {
+  var srvSection = document.getElementById('services');
+  var srvStack   = document.getElementById('srvStack');
+  var dots       = document.querySelectorAll('.srv-dot');
+  if (!srvSection || !srvStack) return;
+
+  var TOTAL = 4;
+  var cur   = -1; // force first update
+
+  function update() {
+    var scrolled  = window.scrollY - srvSection.offsetTop;
+    var panelH    = window.innerHeight;
+    var clamped   = Math.max(0, Math.min(scrolled, panelH * TOTAL - 1));
+    var idx       = Math.min(TOTAL - 1, Math.floor(clamped / panelH));
+
+    if (idx === cur) return;
+    cur = idx;
+    srvStack.style.transform = 'translateY(-' + (idx * 100) + '%)';
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // Dot clicks — scroll to that panel's position
+  dots.forEach(function(d) {
+    d.addEventListener('click', function() {
+      var idx = parseInt(d.getAttribute('data-idx'));
+      window.scrollTo({
+        top: srvSection.offsetTop + idx * window.innerHeight,
+        behavior: 'smooth'
+      });
+    });
+  });
+})();
+
+// ── Vertical text in hero SVG — position dynamically ──
+(function positionHeroVertText() {
+  function place() {
+    const svg  = document.querySelector('.hero-bg');
+    const text = document.getElementById('heroVertText');
+    if (!svg || !text) return;
+    const vb = svg.viewBox.baseVal;   // 0 0 1440 900
+    // SVG uses preserveAspectRatio="xMidYMid slice" — scale = max of both axes
+    const scaleX = window.innerWidth  / vb.width;
+    const scaleY = window.innerHeight / vb.height;
+    const scale  = Math.max(scaleX, scaleY);   // "slice" uses max
+    // Viewport center in SVG user units
+    const vpCenterY = (window.innerHeight / 2) / scale;
+    // Right edge: SVG right in user units = vb.width, minus margin (font-size/2 + spacing)
+    const svgRightEdge = vb.width - 32;
+    // After rotate(90): svg_x maps to screen_y, -svg_y maps to screen_x
+    // target screen_y = center → svg_x = vpCenterY
+    // target screen_x = right  → -svg_y = svgRightEdge → svg_y = -svgRightEdge
+    text.setAttribute('transform', 'rotate(90)');
+    text.setAttribute('x', String(Math.round(vpCenterY)));
+    text.setAttribute('y', String(-Math.round(svgRightEdge)));
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', place);
+  } else {
+    place();
+  }
+  window.addEventListener('resize', place);
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Siddart — 3D Logo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/three/build/three.module.js",
+    "three/addons/": "/three/addons/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+
+// ── Renderer ──────────────────────────────────────────────────────
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping         = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.8;
+renderer.outputColorSpace    = THREE.SRGBColorSpace;
+
+// ── Scene & Camera ────────────────────────────────────────────────
+const scene  = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+const camera = new THREE.PerspectiveCamera(26, innerWidth / innerHeight, 0.1, 3000);
+camera.position.set(0, 0, 580);
+
+// ── Environment — gradiente alto contraste tipo studio ────────────
+// Pintamos un canvas equirectangular: negro con bandas de luz blanca
+// Esto es lo que el cromo reflejará — la clave para que se vea metálico
+const EW = 2048, EH = 1024;
+const envCanvas = document.createElement('canvas');
+envCanvas.width = EW; envCanvas.height = EH;
+const ec = envCanvas.getContext('2d');
+
+// Base negra
+ec.fillStyle = '#000';
+ec.fillRect(0, 0, EW, EH);
+
+// Softbox principal — banda blanca grande arriba-izquierda
+const g1 = ec.createRadialGradient(EW*0.25, EH*0.2, 0, EW*0.25, EH*0.2, EW*0.3);
+g1.addColorStop(0,   'rgba(255,255,255,1)');
+g1.addColorStop(0.4, 'rgba(255,255,255,0.7)');
+g1.addColorStop(1,   'rgba(0,0,0,0)');
+ec.fillStyle = g1;
+ec.fillRect(0, 0, EW, EH);
+
+// Fill derecho — más tenue
+const g2 = ec.createRadialGradient(EW*0.78, EH*0.45, 0, EW*0.78, EH*0.45, EW*0.2);
+g2.addColorStop(0,   'rgba(255,245,220,0.55)');
+g2.addColorStop(1,   'rgba(0,0,0,0)');
+ec.fillStyle = g2;
+ec.fillRect(0, 0, EW, EH);
+
+// Top cenital — franja horizontal brillante
+const g3 = ec.createLinearGradient(0, 0, 0, EH*0.15);
+g3.addColorStop(0,   'rgba(255,255,255,0.9)');
+g3.addColorStop(1,   'rgba(0,0,0,0)');
+ec.fillStyle = g3;
+ec.fillRect(0, 0, EW, EH*0.15);
+
+// Rim inferior azul frío
+const g4 = ec.createLinearGradient(0, EH*0.85, 0, EH);
+g4.addColorStop(0,   'rgba(0,0,0,0)');
+g4.addColorStop(1,   'rgba(100,130,255,0.4)');
+ec.fillStyle = g4;
+ec.fillRect(0, EH*0.85, EW, EH*0.15);
+
+// Acento naranja/cobre — tono del referente
+const g5 = ec.createRadialGradient(EW*0.1, EH*0.75, 0, EW*0.1, EH*0.75, EW*0.15);
+g5.addColorStop(0,   'rgba(255,90,20,0.5)');
+g5.addColorStop(1,   'rgba(0,0,0,0)');
+ec.fillStyle = g5;
+ec.fillRect(0, 0, EW, EH);
+
+const envTex = new THREE.CanvasTexture(envCanvas);
+envTex.mapping = THREE.EquirectangularReflectionMapping;
+envTex.colorSpace = THREE.SRGBColorSpace;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+pmrem.compileEquirectangularShader();
+const envMap = pmrem.fromEquirectangular(envTex).texture;
+scene.environment = envMap;
+envTex.dispose();
+pmrem.dispose();
+
+// ── Luces directas — para highlights duros en el bevel ───────────
+const key = new THREE.DirectionalLight(0xffffff, 18);
+key.position.set(-2, 3, 4);
+scene.add(key);
+
+const top = new THREE.DirectionalLight(0xffffff, 10);
+top.position.set(0, 6, 1);
+scene.add(top);
+
+const rim = new THREE.DirectionalLight(0x7788cc, 6);
+rim.position.set(1, -2, -4);
+scene.add(rim);
+
+const warm = new THREE.PointLight(0xff5500, 100, 900);
+warm.position.set(-200, -180, 280);
+scene.add(warm);
+
+// ── Material — cromo de alto contraste ───────────────────────────
+const mat = new THREE.MeshPhysicalMaterial({
+  color:           new THREE.Color(0xffffff),
+  metalness:       1.0,
+  roughness:       0.05,
+  envMapIntensity: 2.5,
+  reflectivity:    1.0,
+});
+
+// ── SVG ───────────────────────────────────────────────────────────
+const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <polygon points="334.63 453.47 334.63 626.8 377.46 626.8 377.46 660.92 295.66 660.92 295.66 419.35 377.46 419.35 377.46 453.47 334.63 453.47"/>
+  <polygon points="784.34 419.35 784.34 660.92 702.54 660.92 702.54 626.8 745.37 626.8 745.37 453.47 702.54 453.47 702.54 419.35 784.34 419.35"/>
+  <path d="M663.54,586.23c-1.12-43.69-43.21-64.27-61.34-73.08l-85.16-42.93c-.98-.5-3.98-2.01-2.95-6.35,1.03-4.34,4.39-4.34,5.49-4.34h137.55v-40.23h-137.55c-21.68,0-39.62,14.17-44.63,35.27-5.02,21.09,4.62,41.82,23.98,51.58l85.29,42.99.26.13c27.6,13.42,38.5,24.08,38.85,38,.44,16.97-12.95,31.94-29.83,33.36-5.39.45-10.6-.34-15.46-2.37-5.16-2.15-9.85-6.05-13.56-11.28l-48.39-68.24c-14.06-21.81-32.97-43.96-66.48-43.96-21.97,0-43.15,10.55-56.66,28.22-11.56,15.11-16.73,34.44-15.22,55.86h40.36c-1.5-12.82.79-23.54,6.82-31.42,7.01-9.16,17.36-12.43,24.71-12.43,10.31,0,18.99,4.23,32.88,25.87l49.17,69.38c8.08,11.4,18.77,20.09,30.92,25.15,10.72,4.46,22.58,6.3,34.29,5.32,38.38-3.23,67.67-35.95,66.68-74.48Z"/>
+</svg>`;
+
+const loader  = new SVGLoader();
+const svgData = loader.parse(svgStr);
+const group   = new THREE.Group();
+
+const extrude = {
+  depth:          55,
+  bevelEnabled:   true,
+  bevelThickness: 8,
+  bevelSize:      5,
+  bevelOffset:    0,
+  bevelSegments:  16,
+};
+
+for (const path of svgData.paths) {
+  for (const shape of SVGLoader.createShapes(path)) {
+    const geo = new THREE.ExtrudeGeometry(shape, extrude);
+    // Suavizar normales — elimina las líneas visibles entre caras
+    geo.computeVertexNormals();
+    const merged = geo.toNonIndexed();
+    merged.computeVertexNormals();
+    group.add(new THREE.Mesh(geo, mat));
+  }
+}
+
+// centrar y escalar
+const box0 = new THREE.Box3().setFromObject(group);
+const c0   = box0.getCenter(new THREE.Vector3());
+const s0   = box0.getSize(new THREE.Vector3());
+group.children.forEach(m => m.position.sub(c0));
+const sc = 280 / Math.max(s0.x, s0.y);
+group.scale.set(sc, -sc, sc);
+const box1 = new THREE.Box3().setFromObject(group);
+group.position.sub(box1.getCenter(new THREE.Vector3()));
+scene.add(group);
+
+// ── Mouse ─────────────────────────────────────────────────────────
+let tx = 0.1, ty = -0.05, cx = 0.1, cy = -0.05;
+window.addEventListener('mousemove', e => {
+  tx = (e.clientX / innerWidth  - 0.5) *  0.6;
+  ty = (e.clientY / innerHeight - 0.5) * -0.35;
+});
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ── Loop ──────────────────────────────────────────────────────────
+let t = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.007;
+  cx += (tx - cx) * 0.04;
+  cy += (ty - cy) * 0.04;
+  group.rotation.y = cx;
+  group.rotation.x = cy;
+
+  // Luces vivas — reflejos que se mueven suavemente
+  key.position.set(-3 + Math.sin(t * 0.3) * 1.5, 4 + Math.cos(t * 0.2) * 0.8, 5);
+  warm.position.x = -200 + Math.sin(t * 0.4) * 60;
+  warm.position.y = -150 + Math.cos(t * 0.3) * 40;
+  warm.intensity  = 120 + Math.sin(t * 0.6) * 25;
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
