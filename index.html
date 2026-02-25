@@ -1350,18 +1350,36 @@
       .menu-nav a    { font-size: clamp(28px, 9vw, 48px); padding: 14px 0; }
 
       /* ── Hero ── */
-      #hero { padding: 100px var(--px) 60px; }
-      .hero-eyebrow { font-size: 10px; margin-bottom: 20px; }
-      .hero-title {
-        font-size: clamp(44px, 12vw, 72px);
-        line-height: 1.05;
+      #hero {
+        min-height: 100vh;
+        padding: 0 var(--px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0;
       }
-      .hero-subtitle { font-size: 14px; margin-top: 20px; max-width: 100%; }
-      .hero-cta { margin-top: 36px; flex-wrap: wrap; gap: 16px; }
+      .hero-text-block {
+        padding-top: 80px;
+        padding-bottom: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+      }
+      .hero-tag { font-size: 10px; margin-bottom: 32px; }
+      .hero-heading {
+        font-size: clamp(52px, 15vw, 80px);
+        line-height: 1.0;
+      }
+      .hero-cycle-wrapper {
+        height: clamp(56px, 16vw, 88px);
+      }
+      .hero-divider { margin: 24px 0; }
+      .hero-subtitle { font-size: 14px; max-width: 100%; line-height: 1.5; }
+      .hero-cta { margin-top: 32px; flex-wrap: wrap; gap: 14px; align-items: center; }
       #heroVertText { display: none; }
       .crosshair { display: none; }
       .crosshair-abs { display: none; }
-      /* Ocultar grid SVG en mobile */
       svg.hero-bg { display: none; }
 
       /* ── Projects ── */
@@ -1391,7 +1409,7 @@
       }
       .srv-left  { padding: 0 var(--px) 32px; order: 2; }
       .srv-right { order: 1; height: 60vw; min-height: 200px; max-height: 280px; }
-      .srv-title { font-size: clamp(36px, 11vw, 56px); line-height: 1; }
+      .srv-title { font-size: clamp(26px, 8vw, 38px); line-height: 1.05; }
       .srv-desc  { font-size: 13px; margin-top: 12px; }
       .srv-tags  { margin-top: 16px; gap: 6px; }
       .srv-tag   { font-size: 10px; padding: 4px 10px; }
@@ -2405,7 +2423,7 @@ window.addEventListener('scroll', () => {
   var dots       = document.querySelectorAll('.srv-dot');
   if (!srvSection || !srvStack) return;
   // Disable on mobile — panels stack vertically via CSS
-  if (window.innerWidth <= 768) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
 
   var TOTAL = 4;
   var cur   = -1; // force first update
