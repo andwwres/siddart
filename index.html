@@ -345,8 +345,8 @@
       height: 100%;
       background: linear-gradient(to bottom,
         rgba(255,255,255,0)    0%,
-        rgba(255,255,255,0.14) 10%,
-        rgba(255,255,255,0.14) 22%,
+        rgba(255,255,255,0.06) 10%,
+        rgba(255,255,255,0.06) 22%,
         rgba(255,255,255,0)    38%,
         rgba(255,255,255,0)    100%);
     }
@@ -2249,12 +2249,6 @@ void main() {
   gl.uniform1f(uOpa, 0.85);
 
   let mouseX = 0, mouseY = 0;
-  const hero = document.getElementById('hero');
-  hero.addEventListener('mousemove', e => {
-    const r = canvas.getBoundingClientRect();
-    mouseX = e.clientX - r.left;
-    mouseY = canvas.height - (e.clientY - r.top);
-  }, { passive: true });
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
