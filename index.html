@@ -1664,18 +1664,6 @@
 
 <!-- ══ HERO ══ -->
 <section id="hero">
-  <div class="grid-lines" aria-hidden="true">
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-    <div class="grid-line"></div>
-  </div>
-
   <!-- Hero background — plasma WebGL canvas -->
   <canvas id="plasmaCanvas" class="hero-bg" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
@@ -1695,24 +1683,23 @@
     <defs>
       <linearGradient id="gridFadeX" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%"   stop-color="black" stop-opacity="1"/>
-        <stop offset="12%"  stop-color="black" stop-opacity="0"/>
-        <stop offset="85%"  stop-color="black" stop-opacity="0"/>
+        <stop offset="20%"  stop-color="black" stop-opacity="0"/>
+        <stop offset="75%"  stop-color="black" stop-opacity="0"/>
         <stop offset="100%" stop-color="black" stop-opacity="1"/>
       </linearGradient>
       <linearGradient id="gridFadeY" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%"  stop-color="black" stop-opacity="1"/>
-        <stop offset="10%" stop-color="black" stop-opacity="0"/>
-        <stop offset="90%" stop-color="black" stop-opacity="0"/>
+        <stop offset="25%" stop-color="black" stop-opacity="0"/>
+        <stop offset="75%" stop-color="black" stop-opacity="0"/>
         <stop offset="100%" stop-color="black" stop-opacity="1"/>
       </linearGradient>
       <mask id="gridMask">
-        <rect x="640" y="0" width="800" height="900" fill="white"/>
-        <rect x="640" y="0" width="800" height="900" fill="url(#gridFadeX)"/>
-        <rect x="640" y="0" width="800" height="900" fill="url(#gridFadeY)"/>
+        <rect x="0" y="0" width="1440" height="900" fill="url(#gridFadeX)"/>
+        <rect x="0" y="0" width="1440" height="900" fill="url(#gridFadeY)" style="mix-blend-mode:multiply"/>
       </mask>
     </defs>
     <!-- Grid cuadriculado derecha — con fade en bordes -->
-    <g opacity="0.25" mask="url(#gridMask)">
+    <g opacity="0.08" mask="url(#gridMask)">
       <line x1="640" y1="0"   x2="1440" y2="0"   stroke="white" stroke-width="0.7"/>
       <line x1="640" y1="60"  x2="1440" y2="60"  stroke="white" stroke-width="0.7"/>
       <line x1="640" y1="120" x2="1440" y2="120" stroke="white" stroke-width="0.7"/>
@@ -2393,7 +2380,7 @@ window.addEventListener('scroll', () => {
 // ── Vertical text in hero SVG — position dynamically ──
 (function positionHeroVertText() {
   function place() {
-    const svg  = document.querySelector('.hero-bg');
+    const svg  = document.querySelector('svg.hero-bg');
     const text = document.getElementById('heroVertText');
     if (!svg || !text) return;
     const vb = svg.viewBox.baseVal;   // 0 0 1440 900
