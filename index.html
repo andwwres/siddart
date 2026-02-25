@@ -1435,22 +1435,26 @@
       /* ── Services — mismo comportamiento sticky que desktop ── */
       .srv-panel {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr auto;
+        grid-template-rows: 55vh 1fr;
+        align-items: start;
       }
       .srv-right {
         order: 1;
-        height: 45vh;
+        height: 55vh;
       }
       .srv-left  {
         order: 2;
-        padding: 0 var(--px) 40px;
+        padding: 20px var(--px) 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       .srv-title { font-size: clamp(36px, 10vw, 52px); line-height: 1; }
-      .srv-desc  { font-size: 13px; margin-top: 12px; }
+      .srv-desc  { font-size: 13px; margin-top: 12px; letter-spacing: 0.06em; }
       .srv-tags  { margin-top: 14px; gap: 6px; }
       .srv-tag   { font-size: 10px; padding: 4px 10px; }
-      .srv-glyph-img { max-height: 90%; max-width: 65%; }
-      .srv-p4 .srv-glyph-img { max-width: 75%; }
+      .srv-glyph-img { max-height: 88%; max-width: 80%; }
+      .srv-p4 .srv-glyph-img { max-width: 85%; }
       .srv-vignette { display: none; }
       .srv-dots { bottom: 16px; right: 16px; }
 
