@@ -1681,54 +1681,58 @@
     </defs>
     <!-- Máscara de fade para la grilla: difumina izquierda, derecha y arriba -->
     <defs>
-      <linearGradient id="gridFadeX" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%"   stop-color="black" stop-opacity="1"/>
-        <stop offset="20%"  stop-color="black" stop-opacity="0"/>
-        <stop offset="75%"  stop-color="black" stop-opacity="0"/>
-        <stop offset="100%" stop-color="black" stop-opacity="1"/>
+      <!-- Gradiente para líneas verticales: desvanece izquierda y derecha -->
+      <linearGradient id="vFade" x1="640" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+        <stop offset="18%"  stop-color="white" stop-opacity="1"/>
+        <stop offset="82%"  stop-color="white" stop-opacity="1"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
       </linearGradient>
-      <linearGradient id="gridFadeY" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%"  stop-color="black" stop-opacity="1"/>
-        <stop offset="25%" stop-color="black" stop-opacity="0"/>
-        <stop offset="75%" stop-color="black" stop-opacity="0"/>
-        <stop offset="100%" stop-color="black" stop-opacity="1"/>
+      <!-- Gradiente para líneas horizontales: desvanece arriba y abajo -->
+      <linearGradient id="hFade" x1="0" y1="0" x2="0" y2="900" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+        <stop offset="22%"  stop-color="white" stop-opacity="1"/>
+        <stop offset="78%"  stop-color="white" stop-opacity="1"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
       </linearGradient>
-      <mask id="gridMask">
-        <rect x="0" y="0" width="1440" height="900" fill="url(#gridFadeX)"/>
-        <rect x="0" y="0" width="1440" height="900" fill="url(#gridFadeY)" style="mix-blend-mode:multiply"/>
-      </mask>
+      <filter id="gBlur"><feGaussianBlur stdDeviation="0.5"/></filter>
+      <!-- Máscara vertical: usa gradiente horizontal -->
+      <mask id="mV"><rect x="640" y="0" width="800" height="900" fill="url(#vFade)"/></mask>
+      <!-- Máscara horizontal: usa gradiente vertical -->
+      <mask id="mH"><rect x="640" y="0" width="800" height="900" fill="url(#hFade)"/></mask>
     </defs>
-    <!-- Grid cuadriculado derecha — con fade en bordes -->
-    <g opacity="0.08" mask="url(#gridMask)">
-      <line x1="640" y1="0"   x2="1440" y2="0"   stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="60"  x2="1440" y2="60"  stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="120" x2="1440" y2="120" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="180" x2="1440" y2="180" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="240" x2="1440" y2="240" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="300" x2="1440" y2="300" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="360" x2="1440" y2="360" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="420" x2="1440" y2="420" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="480" x2="1440" y2="480" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="540" x2="1440" y2="540" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="600" x2="1440" y2="600" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="660" x2="1440" y2="660" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="720" x2="1440" y2="720" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="780" x2="1440" y2="780" stroke="white" stroke-width="0.7"/>
-      <line x1="640" y1="840" x2="1440" y2="840" stroke="white" stroke-width="0.7"/>
-      <line x1="640"  y1="0" x2="640"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="700"  y1="0" x2="700"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="760"  y1="0" x2="760"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="820"  y1="0" x2="820"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="880"  y1="0" x2="880"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="940"  y1="0" x2="940"  y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1000" y1="0" x2="1000" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1060" y1="0" x2="1060" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1120" y1="0" x2="1120" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1180" y1="0" x2="1180" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1240" y1="0" x2="1240" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1300" y1="0" x2="1300" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1360" y1="0" x2="1360" y2="900" stroke="white" stroke-width="0.7"/>
-      <line x1="1420" y1="0" x2="1420" y2="900" stroke="white" stroke-width="0.7"/>
+    <!-- Líneas verticales — desvanecen en lados izq/der -->
+    <g opacity="0.04" mask="url(#mV)" filter="url(#gBlur)">
+      <line x1="700"  y1="0" x2="700"  y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="760"  y1="0" x2="760"  y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="820"  y1="0" x2="820"  y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="880"  y1="0" x2="880"  y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="940"  y1="0" x2="940"  y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1000" y1="0" x2="1000" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1060" y1="0" x2="1060" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1120" y1="0" x2="1120" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1180" y1="0" x2="1180" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1240" y1="0" x2="1240" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1300" y1="0" x2="1300" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1360" y1="0" x2="1360" y2="900" stroke="white" stroke-width="0.6"/>
+      <line x1="1420" y1="0" x2="1420" y2="900" stroke="white" stroke-width="0.6"/>
+    </g>
+    <!-- Líneas horizontales — desvanecen arriba/abajo -->
+    <g opacity="0.04" mask="url(#mH)" filter="url(#gBlur)">
+      <line x1="640" y1="60"  x2="1440" y2="60"  stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="120" x2="1440" y2="120" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="180" x2="1440" y2="180" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="240" x2="1440" y2="240" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="300" x2="1440" y2="300" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="360" x2="1440" y2="360" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="420" x2="1440" y2="420" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="480" x2="1440" y2="480" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="540" x2="1440" y2="540" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="600" x2="1440" y2="600" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="660" x2="1440" y2="660" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="720" x2="1440" y2="720" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="780" x2="1440" y2="780" stroke="white" stroke-width="0.6"/>
+      <line x1="640" y1="840" x2="1440" y2="840" stroke="white" stroke-width="0.6"/>
     </g>
     <!-- Texto vertical derecha — posicionado via JS -->
     <text id="heroVertText"
