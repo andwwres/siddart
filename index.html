@@ -1368,11 +1368,16 @@
       }
       .hero-tag { font-size: 10px; margin-bottom: 32px; }
       .hero-heading {
-        font-size: clamp(52px, 15vw, 80px);
+        font-size: clamp(40px, 12vw, 62px);
         line-height: 1.0;
       }
       .hero-cycle-wrapper {
-        height: clamp(56px, 16vw, 88px);
+        height: clamp(52px, 14vw, 76px);
+      }
+      .hero-cycle span {
+        font-size: clamp(48px, 14vw, 76px);
+        height: clamp(52px, 14vw, 76px);
+        line-height: clamp(52px, 14vw, 76px);
       }
       .hero-divider { margin: 24px 0; }
       .hero-subtitle { font-size: 14px; max-width: 100%; line-height: 1.5; }
@@ -1409,7 +1414,7 @@
       }
       .srv-left  { padding: 0 var(--px) 32px; order: 2; }
       .srv-right { order: 1; height: 60vw; min-height: 200px; max-height: 280px; }
-      .srv-title { font-size: clamp(26px, 8vw, 38px); line-height: 1.05; }
+      .srv-title { font-size: clamp(22px, 6.5vw, 32px); line-height: 1.1; }
       .srv-desc  { font-size: 13px; margin-top: 12px; }
       .srv-tags  { margin-top: 16px; gap: 6px; }
       .srv-tag   { font-size: 10px; padding: 4px 10px; }
@@ -2422,13 +2427,16 @@ window.addEventListener('scroll', () => {
   var srvStack   = document.getElementById('srvStack');
   var dots       = document.querySelectorAll('.srv-dot');
   if (!srvSection || !srvStack) return;
-  // Disable on mobile — panels stack vertically via CSS
-  if (window.matchMedia('(max-width: 768px)').matches) return;
-
+  var mq    = window.matchMedia('(max-width: 768px)');
   var TOTAL = 4;
-  var cur   = -1; // force first update
+  var cur   = -1;
 
   function update() {
+    // On mobile: reset any transform and bail out
+    if (mq.matches) {
+      srvStack.style.transform = '';
+      return;
+    }
     var scrolled  = window.scrollY - srvSection.offsetTop;
     var panelH    = window.innerHeight;
     var clamped   = Math.max(0, Math.min(scrolled, panelH * TOTAL - 1));
