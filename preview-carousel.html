@@ -81,10 +81,15 @@
         border-color 0.3s ease;
     }
 
-    .track:hover .card { flex: 0 0 72px; }   /* collapse all siblings on parent hover */
-    .track:hover .card:hover { flex: 1; }     /* expand only hovered card */
+    /* collapse siblings when track has hover or active card */
+    .track:hover .card,
+    .track.has-active .card { flex: 0 0 72px; }
 
-    .card:hover { border-color: #333; }
+    .track:hover .card:hover,
+    .card.active { flex: 1; }
+
+    .card:hover,
+    .card.active { border-color: #333; }
 
     /* bg image */
     .card__bg {
@@ -99,7 +104,8 @@
         transform 0.6s cubic-bezier(0.77, 0, 0.18, 1);
     }
 
-    .card:hover .card__bg {
+    .card:hover .card__bg,
+    .card.active .card__bg {
       opacity: 1;
       transform: scale(1);
     }
@@ -118,7 +124,8 @@
       transition: opacity 0.4s ease;
     }
 
-    .card:hover .card__overlay { opacity: 1; }
+    .card:hover .card__overlay,
+    .card.active .card__overlay { opacity: 1; }
 
     /* number — vertical when closed, hidden when open */
     .card__number {
@@ -134,7 +141,8 @@
       z-index: 2;
     }
 
-    .card:hover .card__number { opacity: 0; }
+    .card:hover .card__number,
+    .card.active .card__number { opacity: 0; }
 
     /* vertical label when closed */
     .card__label-closed {
@@ -152,7 +160,8 @@
       z-index: 2;
     }
 
-    .card:hover .card__label-closed { opacity: 0; }
+    .card:hover .card__label-closed,
+    .card.active .card__label-closed { opacity: 0; }
 
     /* content block — visible when open */
     .card__content {
@@ -169,7 +178,8 @@
       z-index: 3;
     }
 
-    .card:hover .card__content {
+    .card:hover .card__content,
+    .card.active .card__content {
       opacity: 1;
       transform: translateY(0);
     }
@@ -299,5 +309,21 @@
 
   </div>
 
+  <script>
+    const cards = document.querySelectorAll('.card');
+    const track = document.querySelector('.track');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const isActive = card.classList.contains('active');
+        cards.forEach(c => c.classList.remove('active'));
+        track.classList.remove('has-active');
+        if (!isActive) {
+          card.classList.add('active');
+          track.classList.add('has-active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
