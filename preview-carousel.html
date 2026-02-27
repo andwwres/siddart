@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview — Card Accordion</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #f0ece3;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── HEADING ─────────────────────────────── */
+    .heading {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .heading h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .heading h2 .strike {
+      position: relative;
+      display: inline-block;
+      color: #555;
+    }
+
+    .heading h2 .strike::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1.5px;
+      background: #555;
+      transform: translateY(-50%);
+    }
+
+    .heading p {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: #666;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── ACCORDION TRACK ─────────────────────── */
+    .track {
+      display: flex;
+      align-items: stretch;
+      height: 520px;
+      gap: 4px;
+      padding: 0 40px;
+      width: 100vw;
+    }
+
+    /* ── CARD ────────────────────────────────── */
+    .card {
+      position: relative;
+      flex: 0 0 72px;          /* closed width */
+      overflow: hidden;
+      border-radius: 6px;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      cursor: pointer;
+      transition:
+        flex 0.6s cubic-bezier(0.77, 0, 0.18, 1),
+        border-color 0.3s ease;
+    }
+
+    .track:hover .card { flex: 0 0 72px; }   /* collapse all siblings on parent hover */
+    .track:hover .card:hover { flex: 1; }     /* expand only hovered card */
+
+    .card:hover { border-color: #333; }
+
+    /* bg image */
+    .card__bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1.06);
+      transition:
+        opacity 0.5s ease 0.1s,
+        transform 0.6s cubic-bezier(0.77, 0, 0.18, 1);
+    }
+
+    .card:hover .card__bg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* dark overlay on top of bg */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.88) 0%,
+        rgba(0,0,0,0.3) 50%,
+        rgba(0,0,0,0.05) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .card:hover .card__overlay { opacity: 1; }
+
+    /* number — vertical when closed, hidden when open */
+    .card__number {
+      position: absolute;
+      top: 24px;
+      left: 0;
+      width: 72px;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: #444;
+      transition: opacity 0.25s ease;
+      z-index: 2;
+    }
+
+    .card:hover .card__number { opacity: 0; }
+
+    /* vertical label when closed */
+    .card__label-closed {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) rotate(90deg);
+      transform-origin: center center;
+      white-space: nowrap;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+      transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+
+    .card:hover .card__label-closed { opacity: 0; }
+
+    /* content block — visible when open */
+    .card__content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 32px 28px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity 0.35s ease 0.2s,
+        transform 0.4s ease 0.15s;
+      z-index: 3;
+    }
+
+    .card:hover .card__content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card__category {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+
+    .card__title {
+      font-size: 1.45rem;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+      color: #f0ece3;
+      margin-bottom: 14px;
+    }
+
+    .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #f0ece3;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(240,236,227,0.3);
+      padding-bottom: 3px;
+      transition: border-color 0.2s ease, gap 0.2s ease;
+    }
+
+    .card__cta:hover { gap: 14px; border-color: #f0ece3; }
+
+    /* placeholder bg colors when no image */
+    .c1 .card__bg { background-color: #1a1a2e; }
+    .c2 .card__bg { background-color: #16213e; }
+    .c3 .card__bg { background-color: #0f3460; }
+    .c4 .card__bg { background-color: #1b1b1b; }
+    .c5 .card__bg { background-color: #1e1a2e; }
+    .c6 .card__bg { background-color: #12201a; }
+  </style>
+</head>
+<body>
+
+  <div class="heading">
+    <h2><span class="strike">One</span> a few more things.</h2>
+    <p>Selected work — 2023–2025</p>
+  </div>
+
+  <div class="track">
+
+    <div class="card c1">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">01</div>
+      <div class="card__label-closed">Brand Identity</div>
+      <div class="card__content">
+        <div class="card__category">Brand Identity</div>
+        <div class="card__title">Noir Studio<br>Rebrand</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+    <div class="card c2">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">02</div>
+      <div class="card__label-closed">Web Experience</div>
+      <div class="card__content">
+        <div class="card__category">Web Experience</div>
+        <div class="card__title">Luminary<br>Digital Platform</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+    <div class="card c3">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">03</div>
+      <div class="card__label-closed">Ad Creative</div>
+      <div class="card__content">
+        <div class="card__category">Ad Creative</div>
+        <div class="card__title">Verso<br>Campaign 2024</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+    <div class="card c4">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">04</div>
+      <div class="card__label-closed">Brand Identity</div>
+      <div class="card__content">
+        <div class="card__category">Brand Identity</div>
+        <div class="card__title">Albedo<br>Visual System</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+    <div class="card c5">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">05</div>
+      <div class="card__label-closed">Web Experience</div>
+      <div class="card__content">
+        <div class="card__category">Web Experience</div>
+        <div class="card__title">Meridian<br>Portfolio Site</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+    <div class="card c6">
+      <div class="card__bg"></div>
+      <div class="card__overlay"></div>
+      <div class="card__number">06</div>
+      <div class="card__label-closed">Ad Creative</div>
+      <div class="card__content">
+        <div class="card__category">Ad Creative</div>
+        <div class="card__title">Cinder<br>Launch Series</div>
+        <a class="card__cta" href="#">View project →</a>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
