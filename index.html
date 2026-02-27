@@ -1719,33 +1719,17 @@
       .srv-glyph-img { max-height: 88%; max-width: 80%; }
       .srv-p4 .srv-glyph-img { max-width: 85%; }
       .srv-glyph-img-wrap { height: 100%; max-height: none; }
-      /* Glow reducido en mobile para que no se corte */
-      .srv-p1 .srv-glyph-img { animation: corchetes-float 4s ease-in-out infinite, glow-breathe-p1-mob 4s ease-in-out infinite; }
-      .srv-p2 .srv-glyph-img { animation: corchetes-float 4s ease-in-out infinite, glow-breathe-p2-mob 4s ease-in-out infinite; }
-      .srv-p3 .srv-glyph-img { animation: corchetes-float 4s ease-in-out infinite, glow-breathe-p3-mob 4s ease-in-out infinite; }
-      .srv-p4 .srv-glyph-img { animation: corchetes-float 4s ease-in-out infinite, glow-breathe-p4-mob 4s ease-in-out infinite; }
+      /* Glow desactivado en mobile — costoso en GPU */
+      .srv-p1 .srv-glyph-img,
+      .srv-p2 .srv-glyph-img,
+      .srv-p3 .srv-glyph-img,
+      .srv-p4 .srv-glyph-img { animation: corchetes-float 4s ease-in-out infinite; }
       /* Footer — variante Extended (font-weight 300) */
       .footer-sub      { font-weight: 300; letter-spacing: 0.08em; line-height: 1.8; }
       .footer-eyebrow  { font-weight: 300; letter-spacing: 0.18em; }
       .footer-copy     { font-weight: 300; letter-spacing: 0.1em; }
       .footer-socials a { font-weight: 300; letter-spacing: 0.1em; }
       .footer-email    { font-weight: 300; letter-spacing: 0.08em; }
-    }
-    @keyframes glow-breathe-p1-mob {
-      0%, 100% { filter: drop-shadow(0 0 14px rgba(236,100,66,0.9)) drop-shadow(0 0 30px rgba(236,100,66,0.5)); }
-      50%       { filter: drop-shadow(0 0 6px rgba(236,100,66,0.5)) drop-shadow(0 0 14px rgba(236,100,66,0.2)); }
-    }
-    @keyframes glow-breathe-p2-mob {
-      0%, 100% { filter: drop-shadow(0 0 14px rgba(237,237,237,0.7)) drop-shadow(0 0 30px rgba(237,237,237,0.35)); }
-      50%       { filter: drop-shadow(0 0 6px rgba(237,237,237,0.4)) drop-shadow(0 0 14px rgba(237,237,237,0.15)); }
-    }
-    @keyframes glow-breathe-p3-mob {
-      0%, 100% { filter: drop-shadow(0 0 14px rgba(40,200,100,0.7)) drop-shadow(0 0 30px rgba(40,200,100,0.5)); }
-      50%       { filter: drop-shadow(0 0 6px rgba(40,200,100,0.5)) drop-shadow(0 0 14px rgba(40,200,100,0.2)); }
-    }
-    @keyframes glow-breathe-p4-mob {
-      0%, 100% { filter: drop-shadow(0 0 14px rgba(107,63,160,0.55)) drop-shadow(0 0 30px rgba(107,63,160,0.35)); }
-      50%       { filter: drop-shadow(0 0 6px rgba(107,63,160,0.35)) drop-shadow(0 0 14px rgba(107,63,160,0.15)); }
     }
   </style>
 </head>
@@ -2019,7 +2003,7 @@
       <div class="srv-right">
         <div class="srv-orb" style="background:radial-gradient(circle,rgba(236,100,66,0.6) 0%,rgba(180,40,10,0.2) 30%,transparent 65%);"></div>
         <div class="srv-glyph-img-wrap">
-          <img class="srv-glyph srv-glyph-img" src="ASTERICO.png" alt="" aria-hidden="true">
+          <img class="srv-glyph srv-glyph-img" src="ASTERICO.webp" loading="lazy" alt="" aria-hidden="true">
         </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
@@ -2048,7 +2032,7 @@
       <div class="srv-right">
         <div class="srv-orb" style="background:radial-gradient(circle,rgba(237,237,237,0.40) 0%,rgba(200,200,200,0.12) 30%,transparent 65%);"></div>
         <div class="srv-glyph-img-wrap">
-          <img class="srv-glyph srv-glyph-img" src="CORCHETES.png" alt="" aria-hidden="true">
+          <img class="srv-glyph srv-glyph-img" src="CORCHETES.webp" loading="lazy" alt="" aria-hidden="true">
         </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
@@ -2104,7 +2088,7 @@
       <div class="srv-right">
         <div class="srv-orb" style="background:radial-gradient(circle,rgba(107,63,160,0.7) 0%,rgba(107,63,160,0.2) 30%,transparent 65%);"></div>
         <div class="srv-glyph-img-wrap">
-          <img class="srv-glyph srv-glyph-img" src="ESPIRAL.png" alt="" aria-hidden="true">
+          <img class="srv-glyph srv-glyph-img" src="ESPIRAL.webp" loading="lazy" alt="" aria-hidden="true">
         </div>
         <svg class="srv-vignette" viewBox="0 0 900 900" preserveAspectRatio="none">
           <defs>
@@ -2399,12 +2383,23 @@ void main() {
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   const t0 = performance.now();
-  (function loop(t) {
-    gl.uniform1f(uTime, (t - t0) * 0.001);
-    gl.uniform2f(uMse, mouseX, mouseY);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    requestAnimationFrame(loop);
-  })(t0);
+  let rafId = null;
+  function startLoop() {
+    if (rafId) return;
+    (function loop(t) {
+      gl.uniform1f(uTime, (t - t0) * 0.001);
+      gl.uniform2f(uMse, mouseX, mouseY);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      rafId = requestAnimationFrame(loop);
+    })(performance.now());
+  }
+  function stopLoop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+  new IntersectionObserver(([e]) => {
+    e.isIntersecting ? startLoop() : stopLoop();
+  }, { threshold: 0.01 }).observe(canvas);
+  startLoop();
 })();
 
 // ── Full-screen overlay menu ──────────────────────────────────
