@@ -145,20 +145,21 @@
     .card:hover .card__number,
     .card.active .card__number { opacity: 0; }
 
-    /* vertical label when closed */
+    /* horizontal label when closed */
     .card__label-closed {
       position: absolute;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%) rotate(90deg);
-      transform-origin: center center;
+      bottom: 20px;
+      left: 8px;
+      right: 8px;
+      transform: none;
       white-space: nowrap;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: #555;
       transition: opacity 0.2s ease;
       z-index: 2;
+      text-align: center;
     }
 
     .card:hover .card__label-closed,
