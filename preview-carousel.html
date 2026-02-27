@@ -81,11 +81,12 @@
         border-color 0.3s ease;
     }
 
-    /* collapse siblings when track has hover or active card */
-    .track:hover .card,
-    .track.has-active .card { flex: 0 0 52px; }
+    /* hover only when no card is active */
+    .track:not(.has-active):hover .card { flex: 0 0 52px; }
+    .track:not(.has-active):hover .card:hover { flex: 1; }
 
-    .track:hover .card:hover,
+    /* active card — click locks it open */
+    .track.has-active .card { flex: 0 0 52px; }
     .track .card.active { flex: 1; }
 
     .card:hover,
@@ -247,10 +248,7 @@
       /* closed card height */
       .card { flex: 0 0 54px; }
 
-      .track:hover .card,
       .track.has-active .card { flex: 0 0 54px; }
-
-      .track:hover .card:hover,
       .track .card.active { flex: 1; }
 
       /* number: left side, vertically centered */
