@@ -224,6 +224,31 @@
     .c4 .card__bg { background-color: #1b1b1b; }
     .c5 .card__bg { background-color: #1e1a2e; }
     .c6 .card__bg { background-color: #12201a; }
+
+    /* ── MOBILE ───────────────────────────────── */
+    @media (max-width: 640px) {
+      body { justify-content: flex-start; padding-top: 10vh; }
+
+      .heading { margin-bottom: 32px; }
+
+      .track {
+        height: 55vh;
+        min-height: 300px;
+        padding: 0 12px;
+        gap: 3px;
+      }
+
+      .card { flex: 0 0 36px; }
+
+      .track:hover .card,
+      .track.has-active .card { flex: 0 0 36px; }
+
+      .card__number { width: 36px; font-size: 0.6rem; }
+      .card__label-closed { display: none; }
+
+      .card__content { padding: 20px 16px; }
+      .card__title { font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
