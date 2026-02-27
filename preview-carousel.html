@@ -63,14 +63,14 @@
       align-items: stretch;
       height: 520px;
       gap: 4px;
-      padding: 0 40px;
+      padding: 0 20px;
       width: 100vw;
     }
 
     /* ── CARD ────────────────────────────────── */
     .card {
       position: relative;
-      flex: 0 0 72px;          /* closed width */
+      flex: 0 0 52px;          /* closed width */
       overflow: hidden;
       border-radius: 6px;
       background: #111;
@@ -83,7 +83,7 @@
 
     /* collapse siblings when track has hover or active card */
     .track:hover .card,
-    .track.has-active .card { flex: 0 0 72px; }
+    .track.has-active .card { flex: 0 0 52px; }
 
     .track:hover .card:hover,
     .track .card.active { flex: 1; }
@@ -132,7 +132,7 @@
       position: absolute;
       top: 24px;
       left: 0;
-      width: 72px;
+      width: 52px;
       text-align: center;
       font-size: 0.7rem;
       letter-spacing: 0.15em;
@@ -226,7 +226,7 @@
     .c6 .card__bg { background-color: #12201a; }
 
     /* ── MOBILE ───────────────────────────────── */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       body {
         justify-content: flex-start;
         padding: 8vh 0 6vh;
