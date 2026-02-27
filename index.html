@@ -2239,8 +2239,8 @@ document.addEventListener('mousemove', e => {
 });
 
 (function animRing() {
-  rx += (mx - rx) * 0.13;
-  ry += (my - ry) * 0.13;
+  rx += (mx - rx) * 0.35;
+  ry += (my - ry) * 0.35;
   ring.style.left = rx + 'px';
   ring.style.top  = ry + 'px';
   requestAnimationFrame(animRing);
