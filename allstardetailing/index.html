@@ -13,6 +13,7 @@
        RESET & ROOT
     ──────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-tap-highlight-color: transparent; }
 
     :root {
       --navy:   #163253;
@@ -146,6 +147,9 @@
       border: none;
       cursor: none;
       padding: 0;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .nav-hamburger span {
@@ -335,6 +339,7 @@
     ──────────────────────────────────────────── */
     .hero {
       min-height: 100vh;
+      min-height: 100dvh; /* iOS Safari: excluye address bar */
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -446,6 +451,9 @@
       text-transform: uppercase;
       border: none;
       cursor: none;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
       transition: background 0.25s, transform 0.25s;
     }
 
@@ -465,6 +473,9 @@
       text-transform: uppercase;
       border: 1.5px solid rgba(255,255,255,0.2);
       cursor: none;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
       transition: border-color 0.25s, color 0.25s, transform 0.25s;
     }
 
@@ -1071,28 +1082,92 @@
     .reveal-delay-5 { transition-delay: 0.5s; }
 
     /* ────────────────────────────────────────────
-       MOBILE
+       RESPONSIVE — 4 breakpoints
     ──────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .services-grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      .process-grid { grid-template-columns: 1fr; gap: 48px; }
-      .process-visual { display: none; }
-      .testimonials-grid { grid-template-columns: 1fr; }
-      .booking-inner { grid-template-columns: 1fr; gap: 40px; }
-      .booking-actions { flex-direction: row; flex-wrap: wrap; }
-      .footer-top { flex-direction: column; gap: 40px; }
-      .footer-links { flex-direction: column; gap: 32px; }
-      .menu-overlay { grid-template-columns: 1fr; }
-      .menu-right { display: none; }
-      .section-header { flex-direction: column; align-items: flex-start; }
+
+    /* ── TABLET (≤ 1024px) ── */
+    @media (max-width: 1024px) {
+      .services-grid     { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .section-header    { flex-direction: column; align-items: flex-start; }
     }
 
-    @media (max-width: 600px) {
-      .stats { grid-template-columns: 1fr; }
-      .hero-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
-      .services-grid { grid-template-columns: 1fr; }
-      .hero-cta { flex-direction: column; }
+    /* ── SMALL TABLET / LARGE MOBILE (≤ 900px) ── */
+    @media (max-width: 900px) {
+      .stats             { grid-template-columns: 1fr 1fr; }
+      .process-grid      { grid-template-columns: 1fr; gap: 48px; }
+      .process-visual    { display: none; }
+      .booking-inner     { grid-template-columns: 1fr; gap: 40px; }
+      .booking-actions   { flex-direction: row; flex-wrap: wrap; }
+      .footer-top        { flex-direction: column; gap: 40px; }
+      .footer-links      { flex-direction: column; gap: 32px; }
+      .menu-overlay      { grid-template-columns: 1fr; }
+      .menu-right        { display: none; }
+      /* Reduce menu vertical padding */
+      .menu-left         { padding-top: 80px; padding-bottom: 48px; }
+    }
+
+    /* ── MOBILE (≤ 640px) ── */
+    @media (max-width: 640px) {
+      /* Section vertical spacing */
+      .services          { padding: 72px var(--px); }
+      .process           { padding: 72px var(--px); }
+      .testimonials      { padding: 72px var(--px); }
+      .booking           { padding: 72px var(--px); }
+      footer             { padding: 48px var(--px) 32px; }
+      .stats             { padding: 0 var(--px) 72px; }
+      .section-header    { margin-bottom: 40px; }
+
+      /* Hero */
+      .hero              { padding-bottom: 56px; }
+      .hero-scroll       { display: none; }
+      .hero-bottom       { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .hero-cta          { flex-direction: column; width: 100%; }
+      .btn-primary,
+      .btn-outline       { justify-content: center; }
+
+      /* Grids → 1 col */
+      .services-grid     { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 40px; }
+      .stats             { grid-template-columns: 1fr 1fr; }
+
+      /* Cards — reduce inner padding */
+      .service-card      { padding: 32px 24px; }
+      .stat-card         { padding: 32px 24px; }
+      .stat-num          { font-size: clamp(40px, 10vw, 80px); }
+      .testimonial-card  { padding: 28px 24px; }
+
+      /* Process steps — tighten columns */
+      .step              { grid-template-columns: 44px 1fr; gap: 16px; }
+
+      /* Booking */
+      .booking-actions   { flex-direction: column; width: 100%; }
+      .booking-actions .btn-primary { justify-content: center; }
+      .booking-phone     { text-align: left; }
+
+      /* Footer */
+      .footer-links      { flex-direction: column; gap: 24px; }
+      .footer-bottom     { flex-direction: column; align-items: flex-start; gap: 20px; }
+
+      /* Menu items — breathe a bit */
+      .menu-left         { padding-top: 72px; padding-bottom: 40px; }
+      .menu-footer       { margin-top: 32px; }
+    }
+
+    /* ── EXTRA SMALL (≤ 400px) ── */
+    @media (max-width: 400px) {
+      .stats             { grid-template-columns: 1fr; }
+      .nav-logo-wordmark { height: 32px; }
+      .hero-title        { letter-spacing: -0.035em; }
+    }
+
+    /* ── TOUCH DEVICES — desactivar cursor personalizado ── */
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none !important; }
+      body               { cursor: auto; }
+      a, button,
+      .service-card, .step,
+      .testimonial-card  { cursor: pointer; }
     }
   </style>
 </head>
@@ -1589,26 +1664,29 @@
   </footer>
 
   <script>
-    /* ── Custom Cursor ── */
+    /* ── Custom Cursor (solo en dispositivos con hover real) ── */
     const dot  = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
+    const isTouchOnly = !window.matchMedia('(hover: hover)').matches;
 
     let mx = -100, my = -100;
     let rx = -100, ry = -100;
 
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.left  = mx + 'px';
-      dot.style.top   = my + 'px';
-    });
+    if (!isTouchOnly) {
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left  = mx + 'px';
+        dot.style.top   = my + 'px';
+      });
 
-    (function animRing() {
-      rx += (mx - rx) * 0.13;
-      ry += (my - ry) * 0.13;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(animRing);
-    })();
+      (function animRing() {
+        rx += (mx - rx) * 0.13;
+        ry += (my - ry) * 0.13;
+        ring.style.left = rx + 'px';
+        ring.style.top  = ry + 'px';
+        requestAnimationFrame(animRing);
+      })();
+    }
 
     document.querySelectorAll('a, button, .service-card, .step, .testimonial-card').forEach(el => {
       el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
