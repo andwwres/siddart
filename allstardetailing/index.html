@@ -7,7 +7,7 @@
   <meta name="description" content="Premium auto detailing services. Paint correction, ceramic coating, interior & exterior detail." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,800;1,900&display=swap" rel="stylesheet" />
   <style>
     /* ────────────────────────────────────────────
        RESET & ROOT
@@ -104,11 +104,15 @@
       z-index: 400;
     }
 
-    .nav-logo-icon {
-      width: 38px;
-      height: 38px;
+    /* ── Logo SVG wordmark ── */
+    .nav-logo-wordmark {
+      height: 42px;
+      width: auto;
       flex-shrink: 0;
     }
+
+    /* keep old icon class alive just in case, but hidden */
+    .nav-logo-icon { display: none; }
 
     .nav-logo-text {
       display: flex;
@@ -118,8 +122,9 @@
 
     .nav-logo-text .all-star {
       font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.25em;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 0.18em;
       color: var(--gold);
       text-transform: uppercase;
     }
@@ -174,6 +179,7 @@
     .nav-hamburger.is-open span { background: var(--black); }
     .menu-open .nav-logo-text .all-star  { color: var(--black); }
     .menu-open .nav-logo-text .detailing { color: rgba(0,0,0,0.4); }
+    .menu-open .nav-logo-wordmark        { color: var(--black); }
 
     /* ────────────────────────────────────────────
        FULLSCREEN MENU OVERLAY
@@ -235,7 +241,8 @@
       justify-content: space-between;
       padding: 18px 0;
       font-size: clamp(28px, 5vw, 64px);
-      font-weight: 800;
+      font-weight: 900;
+      font-style: italic;
       letter-spacing: -0.03em;
       line-height: 1.1;
       color: rgba(0,0,0,0.7);
@@ -374,6 +381,7 @@
     .hero-title {
       font-size: clamp(52px, 10vw, 148px);
       font-weight: 900;
+      font-style: italic;
       letter-spacing: -0.04em;
       line-height: 0.92;
       text-transform: uppercase;
@@ -555,6 +563,7 @@
     .section-title {
       font-size: clamp(36px, 6vw, 80px);
       font-weight: 900;
+      font-style: italic;
       letter-spacing: -0.04em;
       line-height: 0.95;
       text-transform: uppercase;
@@ -899,6 +908,7 @@
     .booking-title {
       font-size: clamp(40px, 7vw, 100px);
       font-weight: 900;
+      font-style: italic;
       letter-spacing: -0.04em;
       line-height: 0.92;
       text-transform: uppercase;
@@ -1114,7 +1124,7 @@
       <!-- Large star watermark -->
       <div class="menu-right-star">
         <svg width="500" height="500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="white"/>
+          <polygon points="50,5 61.2,35.5 95.1,35.5 68.4,55.4 79.1,90.9 50,71 20.9,90.9 31.6,55.4 4.9,35.5 38.8,35.5" fill="white"/>
         </svg>
       </div>
       <div class="menu-right-inner">
@@ -1129,15 +1139,33 @@
   ════════════════════════════════════════ -->
   <nav id="navbar">
     <a href="#" class="nav-logo">
-      <!-- Star logo SVG -->
-      <svg class="nav-logo-icon" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="30,4 37,22 56,22 42,34 47,54 30,43 13,54 18,34 4,22 23,22" fill="#163253" stroke="#fbb929" stroke-width="1.5"/>
-        <text x="30" y="34" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="16" fill="#fbb929" letter-spacing="-1">S</text>
+      <!--
+        Logo SVG — recreación del wordmark oficial All Star Detailing.
+        Para usar el PNG/SVG real, reemplaza este <svg> con:
+        <img src="assets/logo-white.png" class="nav-logo-wordmark" alt="All Star Detailing">
+      -->
+      <svg class="nav-logo-wordmark" viewBox="0 0 178 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 5-pointed star mark -->
+        <polygon points="22,2 27,15.5 41.5,15.5 30.5,24 34.5,38 22,29.5 9.5,38 13.5,24 2.5,15.5 17,15.5"
+                 fill="currentColor"/>
+        <!-- ALL — bold italic -->
+        <text x="47" y="22"
+              font-family="Montserrat,sans-serif" font-weight="900" font-style="italic"
+              font-size="22" fill="currentColor" letter-spacing="-0.8">ALL</text>
+        <!-- STAR — larger bold italic -->
+        <text x="47" y="44"
+              font-family="Montserrat,sans-serif" font-weight="900" font-style="italic"
+              font-size="28" fill="currentColor" letter-spacing="-1">STAR</text>
+        <!-- Vertical divider -->
+        <line x1="118" y1="6" x2="118" y2="44" stroke="currentColor" stroke-width="0.75" opacity="0.25"/>
+        <!-- DETAILING — small caps -->
+        <text x="126" y="21"
+              font-family="Montserrat,sans-serif" font-weight="700"
+              font-size="7.5" fill="currentColor" opacity="0.5" letter-spacing="2">DETAIL-</text>
+        <text x="126" y="33"
+              font-family="Montserrat,sans-serif" font-weight="700"
+              font-size="7.5" fill="currentColor" opacity="0.5" letter-spacing="2">ING</text>
       </svg>
-      <div class="nav-logo-text">
-        <span class="all-star">All Star</span>
-        <span class="detailing">Detailing</span>
-      </div>
     </a>
     <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span>
@@ -1498,14 +1526,23 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#" class="nav-logo" style="z-index:1;position:relative;">
-          <svg class="nav-logo-icon" viewBox="0 0 60 60" fill="none">
-            <polygon points="30,4 37,22 56,22 42,34 47,54 30,43 13,54 18,34 4,22 23,22" fill="#163253" stroke="#fbb929" stroke-width="1.5"/>
-            <text x="30" y="34" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="16" fill="#fbb929" letter-spacing="-1">S</text>
+          <svg class="nav-logo-wordmark" viewBox="0 0 178 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="22,2 27,15.5 41.5,15.5 30.5,24 34.5,38 22,29.5 9.5,38 13.5,24 2.5,15.5 17,15.5"
+                     fill="currentColor"/>
+            <text x="47" y="22"
+                  font-family="Montserrat,sans-serif" font-weight="900" font-style="italic"
+                  font-size="22" fill="currentColor" letter-spacing="-0.8">ALL</text>
+            <text x="47" y="44"
+                  font-family="Montserrat,sans-serif" font-weight="900" font-style="italic"
+                  font-size="28" fill="currentColor" letter-spacing="-1">STAR</text>
+            <line x1="118" y1="6" x2="118" y2="44" stroke="currentColor" stroke-width="0.75" opacity="0.25"/>
+            <text x="126" y="21"
+                  font-family="Montserrat,sans-serif" font-weight="700"
+                  font-size="7.5" fill="currentColor" opacity="0.5" letter-spacing="2">DETAIL-</text>
+            <text x="126" y="33"
+                  font-family="Montserrat,sans-serif" font-weight="700"
+                  font-size="7.5" fill="currentColor" opacity="0.5" letter-spacing="2">ING</text>
           </svg>
-          <div class="nav-logo-text">
-            <span class="all-star">All Star</span>
-            <span class="detailing" style="color:rgba(255,255,255,0.25);">Detailing</span>
-          </div>
         </a>
         <p>Premium auto detailing services. Paint correction, ceramic coating, interior & exterior detail.</p>
       </div>
